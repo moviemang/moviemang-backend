@@ -64,18 +64,18 @@ ext {
 
 project(':apis:member-api-server'){
     dependencies {
-        compileOnly project(':core:datastore')
+        implementation project(':core:datastore')
     }
 }
 
 project(':apis:playlist-api-server'){
     dependencies {
-        compileOnly project(':core:datastore')
+        implementation project(':core:datastore')
     }
 }
 
 project(':core:datastore'){
     dependencies {
-        compileOnly project(':core:core-utils')
+        implementation project(':core:core-utils')
     }
 }

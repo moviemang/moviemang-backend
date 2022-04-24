@@ -4,7 +4,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 
-@ComponentScan(basePackages = "com.moviemang")
+@ComponentScan(basePackages = {"com.moviemang", "com.moviemang.datastore"})
 @SpringBootApplication
 public class PlaylistApiServerApplication {
 
