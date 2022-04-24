@@ -41,11 +41,12 @@ allprojects {
         /* RestDocs */
         testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
         implementation 'org.springframework.boot:spring-boot-starter-web'
+
         /* common Util */
+        implementation 'com.google.guava:guava:28.2-jre'
         implementation 'org.apache.commons:commons-lang3:3.5'
         implementation 'org.apache.commons:commons-collections4:4.1'
         
-        /* junit*/
         testImplementation group: 'junit', name: 'junit', version: '4.13.2'
         implementation('com.mashape.unirest:unirest-java:1.4.9')
     }
@@ -63,21 +64,12 @@ ext {
 
 project(':apis:member-api-server'){
     dependencies {
-        compileOnly project(':core:core-utils')
-        compileOnly project(':core:datastore')
-    }
-}
-
-project(':apis:main-api-server'){
-    dependencies {
-        compileOnly project(':core:core-utils')
         compileOnly project(':core:datastore')
     }
 }
 
 project(':apis:playlist-api-server'){
     dependencies {
-        compileOnly project(':core:core-utils')
         compileOnly project(':core:datastore')
     }
 }
