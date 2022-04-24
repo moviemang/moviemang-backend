@@ -66,6 +66,7 @@ project(':apis:member-api-server'){
     dependencies {
         implementation project(':core:datastore')
         implementation project(':core:core-utils')
+        implementation project(':core:security')
     }
 }
 
@@ -78,6 +79,13 @@ project(':apis:playlist-api-server'){
 
 project(':core:datastore'){
     dependencies {
+        implementation project(':core:core-utils')
+    }
+}
+
+project(':core:security'){
+    dependencies {
+        implementation project(':core:datastore')
         implementation project(':core:core-utils')
     }
 }
