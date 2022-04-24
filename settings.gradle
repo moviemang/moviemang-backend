@@ -1,0 +1,8 @@
+rootProject.name = 'moviemang'
+
+include ':apis:main-api-server'
+include ':apis:member-api-server'
+include ':apis:playlist-api-server'
+include ':core:core-utils'
+include ':core:datastore'
+include ':batch'
