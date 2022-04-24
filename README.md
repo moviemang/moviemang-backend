@@ -7,10 +7,9 @@
 
 ## 서비스별 포트 
 | 서비스         | port | 비고  |
-|-------------|---------|-----|
-| main-api-server   | 9091 |     |
-| member-api-server | 9092 |     |
-| playlist-api-server | 9093 |     |
+|-------------|------|-----|
+| member-api-server | 8080 |     |
+| playlist-api-server | 8081 |     |
 
 ## 프로젝트 구조
 ```
@@ -18,35 +17,44 @@ moviemang
 ├── HELP.md
 ├── README.md
 ├── apis
-│   ├── main-api-server
-│   │   ├── build.gradle
-│   │   └── src
-│   │       ├── main
-│   │       │   ├── java
-│   │       │   │   └── com.moviemang.main
-│   │       │   │               ├── MainApiServerApplication.java
-│   │       │   │               ├── config
-│   │       │   │               │   └── WebConfig.java
-│   │       │   │               ├── controller
-│   │       │   │               │   └── MainController.java
-│   │       │   │               └── domain
-│   │       │   │                   ├── Dummy.java
-│   │       │   │                   └── enums
-│   │       │   └── resources
-│   │       │       └── application.properties
-│   │       └── test
-│   │           └── java
-│   │               └── com.moviemang.main
-│   │                           └── MainApiServerApplicationTests.java
 │   └── member-api-server
 │       ├── build.gradle
 │       └── src
 │           ├── main
 │           │   ├── java
 │           │   │   └── com.moviemang.member
+│           │   │               ├── controller
+│           │   │               │   └── MemberControler.java
+│           │   │               ├── service
+│           │   │               │   └── MemberService.java
+│           │   │               │   └── MemberServiceImpl.java
+│           │   │               ├── domain
+│           │   │               │   └── Member.java
+│           │   │               │   └── Join.java
 │           │   │               └── MemberApiServerApplication.java
 │           │   └── resources
 │           │       └── application.properties
+│           └── test
+│               └── java
+│                   └── com.moviemang.member
+│                               └── MemberApiServerApplicationTests.java
+│   └── playlist-api-server
+│       ├── build.gradle
+│       └── src
+│           ├── main
+│           │   ├── java
+│           │   │   └── com.moviemang.playlist
+│           │   │               ├── controller
+│           │   │               │   └── PlaylistControler.java
+│           │   │               ├── service
+│           │   │               │   └── PlaylistService.java
+│           │   │               │   └── PlaylistServiceImpl.java
+│           │   │               ├── domain
+│           │   │               │   └── Playlist.java
+│           │   │               │   └── LikePlaylist.java
+│           │   │               └── PlaylistApiServerApplication.java
+│           │   └── resources
+│           │       └── application.yml
 │           └── test
 │               └── java
 │                   └── com.moviemang.member
@@ -97,10 +105,33 @@ moviemang
 │           │   │               ├── DatastoreApplication.java
 │           │   │               ├── config
 │           │   │               │   └── MariaDataSourceConfig.java
+│           │   │               ├── entity
+│           │   │               │   └── maria
+│           │   │               │   │   ├── Member.java
+│           │   │               │   │   ├── LoginLog.java
+│           │   │               │   │   └── Tag.java
+│           │   │               │   └── mongo
+│           │   │               │   │   ├── Playlist.java
+│           │   │               │   │   ├── Bookmark.java
+│           │   │               │   │   ├── Like.java
+│           │   │               │   │   └── Review.java
 │           │   │               └── repository
-│           │   │                   └── MemberRepository.java
+│           │   │               │   └── maria
+│           │   │               │   │   ├── MemberRepository.java
+│           │   │               │   │   └── TagRepository.java
+│           │   │               │   └── mongo
+│           │   │               │   │   ├── PlaylistRepository.java
+│           │   │               │   │   ├── BookmarkRepository.java
+│           │   │               │   │   ├── ReviewRepository.java
+│           │   │               │   │   └── LikeRepository.java
 │           │   └── resources
-│           │       └── application.properties
+│           │       ├── local
+│           │       │   └── jdbc.properties
+│           │       ├── dev
+│           │       │   └── jdbc.properties
+│           │       ├── prod
+│           │       │   └── jdbc.properties
+│           │       └── application.yml
 │           └── test
 │               └── java
 │                   └── com.moviemang.datastore
