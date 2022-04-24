@@ -1,16 +1,26 @@
 package com.moviemang.coreutils.common.response;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.http.HttpStatus;
 
 @SuppressWarnings("rawtypes")
+@JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 @Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class CommonResponse<T> {
+    @JsonIgnore
+    private HttpStatus status;
 	private Result result;
     private T data;
     private String message;
@@ -22,6 +32,15 @@ public class CommonResponse<T> {
                 .result(Result.SUCCESS)
                 .data(data)
                 .message(message)
+                .build();
+    }
+    @SuppressWarnings("unchecked")
+    public static <T> CommonResponse<T> success(T data, String message, HttpStatus status) {
+        return (CommonResponse<T>) CommonResponse.builder()
+                .result(Result.SUCCESS)
+                .data(data)
+                .message(message)
+                .status(status)
                 .build();
     }
 

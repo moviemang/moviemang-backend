@@ -1,5 +1,7 @@
 package com.moviemang.playlist.controller;
 
+import com.moviemang.coreutils.common.response.CommonResponse;
+import com.moviemang.playlist.domain.Playlist;
 import com.moviemang.playlist.service.PlaylistService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,8 +27,10 @@ public class PlaylistController {
 
     @PostMapping( "/test")
     @ResponseStatus(HttpStatus.CREATED)
-    public void postTest(){
+    public CommonResponse postTest(){
         log.info("PostMapping");
+        CommonResponse commonResponse = CommonResponse.success(new Playlist());
+        return new CommonResponse<>();
     }
 
     @DeleteMapping("/test")

@@ -65,12 +65,14 @@ ext {
 project(':apis:member-api-server'){
     dependencies {
         implementation project(':core:datastore')
+        implementation project(':core:core-utils')
     }
 }
 
 project(':apis:playlist-api-server'){
     dependencies {
         implementation project(':core:datastore')
+        implementation project(':core:core-utils')
     }
 }
 
