@@ -8,4 +8,6 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter'
     implementation 'org.projectlombok:lombok:1.18.20'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    implementation 'org.springframework.security.oauth:spring-security-oauth2'
+    implementation 'org.springframework.security:spring-security-jwt:1.0.8.RELEASE'
 }

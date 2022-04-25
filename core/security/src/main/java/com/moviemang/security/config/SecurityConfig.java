@@ -2,6 +2,7 @@ package com.moviemang.security.config;
 
 import com.moviemang.security.filter.AuthenticationFilter;
 import com.moviemang.security.filter.LoginFilter;
+import com.moviemang.security.handler.CustomAccessDeniedHandler;
 import com.moviemang.security.service.UserDetailServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private UserDetailServiceImpl userDetailService;
+    @Autowired
+    private CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+    @Autowired
+    private CustomAccessDeniedHandler customAccessDeniedHandler;
 
 
     @Bean
@@ -41,7 +46,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.csrf().disable().cors().and().authorizeRequests()
                 .antMatchers(HttpMethod.POST, "/member/join").permitAll()
                 .antMatchers(HttpMethod.POST, "/login").permitAll()
-                .anyRequest().permitAll()
+                .anyRequest().authenticated()
+                .and()
+                    .exceptionHandling().authenticationEntryPoint(customAuthenticationEntryPoint)
+                    .accessDeniedHandler(customAccessDeniedHandler)
                 .and()
                 .addFilterBefore(new LoginFilter("/login", authenticationManager()),
                         UsernamePasswordAuthenticationFilter.class)

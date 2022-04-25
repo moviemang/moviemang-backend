@@ -1,8 +1,10 @@
 package com.moviemang.security.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.moviemang.datastore.entity.maria.LoginLog;
 import com.moviemang.security.domain.UserCredentials;
 import com.moviemang.security.service.AuthenticationService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -40,6 +42,8 @@ public class LoginFilter extends AbstractAuthenticationProcessingFilter {
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
         AuthenticationService.creatJwtToken(response, authResult);
+        chain.doFilter(request,response);
+
     }
 
     @Override
