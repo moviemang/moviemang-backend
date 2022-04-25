@@ -8,14 +8,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import com.moviemang.coreutils.common.exception.BaseException;
 import com.moviemang.coreutils.common.response.CommonResponse;
 import com.moviemang.coreutils.common.response.ErrorCode;
 import com.moviemang.datastore.domain.MailCertificationDto;
 import com.moviemang.datastore.entity.maria.MailCertification;
 import com.moviemang.datastore.repository.maria.MailCertificationRepository;
+import com.moviemang.member.util.CreateCertificationUtil;
 import com.moviemang.member.util.MailUtil;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class MemberServiceImpl implements MemberService{
 	
 	private MailCertificationRepository mailRepo;
@@ -26,6 +31,39 @@ public class MemberServiceImpl implements MemberService{
 	public MemberServiceImpl(MailUtil mailUtil, MailCertificationRepository mailRepo) {
 		this.mailRepo = mailRepo;
 		this.mailUtil = mailUtil;
+	}
+	
+	/**
+	 * 이메일 중복체크 클릭 시 인증메일 발송하는 메소드
+	 * @author kang.dj
+	 * @param memberEmail
+	 * @return {@link Boolean}
+	 */
+	public boolean sendCertificationMail(String memberEmail) {
+		String certificationStr = CreateCertificationUtil.create(false, 6);	// 인증번호 생성
+		LocalDateTime now = LocalDateTime.now();	// 메일 전송 시간
+		
+		try {
+			// 이메일 인증정보 세팅
+			MailCertification certificationInfo = MailCertification.builder()
+					.memberEmail(memberEmail)
+					.mailCertificationMsg(certificationStr)
+					.regDate(now)
+					.build();
+			
+			// 회원 이메일 및 인증번호와 인증 메일 전송 시간 저장
+			mailRepo.save(certificationInfo);
+		} catch (Exception e) {
+			log.error("이메일 인증 데이터 세팅 중 오류 발생 : {}", e.getMessage());
+			throw new BaseException(ErrorCode.COMMON_SYSTEM_ERROR);
+		}
+		
+		boolean isSuccess = mailUtil.certificationMailSend(certificationStr, memberEmail);
+		
+		if(!isSuccess) {
+			return false;
+		}
+		return true;
 	}
 	
 	/**
@@ -42,9 +80,6 @@ public class MemberServiceImpl implements MemberService{
 		
 		// 해당 이메일로 등록된 데이터 중 가장 최신 row 가져옴
 		MailCertification certificationInfo = mailRepo.findTop1ByMemberEmailOrderByRegDateDesc(certificationDto.getMemberEmail());
-		
-		// 해당하는 이메일이 없을 경우
-		
 		
 		LocalDateTime mailSendTime = certificationInfo.getRegDate(); // 메일 보낸 시간
 		LocalDateTime formattedDate = LocalDateTime.parse(certificationDto.getClickedTime(), formatter); // 클릭한 시간 포맷팅 String => LocalDateTime
