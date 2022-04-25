@@ -5,22 +5,8 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
-  mail:
-    host: smtp.gmail.com
-    port: 465
-    username: moviemang2@gmail.com
-    password: jzmljjxrbvvqgqyq
-    default-encoding: UTF-8
-    protocol: smtps
-    properties:
-      mail:
-        smtp:
-          auth: true
-          starttls:
-            enable : true
-            
+
 server:
   port: 8080
   
-  ## spring.jackson.property-naming-strategy=UPPER_CAMEL_CASE
 
