@@ -28,6 +28,8 @@ allprojects {
     }
 
     dependencies {
+        /* JPA */
+        implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     	/* starter */
     	implementation 'org.springframework.boot:spring-boot-starter'
     	testImplementation 'org.springframework.boot:spring-boot-starter-test'
@@ -47,9 +49,7 @@ allprojects {
         implementation 'org.apache.commons:commons-lang3:3.5'
         implementation 'org.apache.commons:commons-collections4:4.1'
 		implementation 'com.google.guava:guava:31.1-jre'
-        
-        
-        
+
         testImplementation group: 'junit', name: 'junit', version: '4.13.2'
         implementation('com.mashape.unirest:unirest-java:1.4.9')
     }
@@ -64,7 +64,12 @@ configurations {
 ext {
     set('snippetsDir', file("build/generated-snippets"))
 }
-
+project(':apis'){
+    bootJar.enabled(false)
+}
+project(':core'){
+    bootJar.enabled(false)
+}
 project(':apis:member-api-server'){
     dependencies {
         implementation project(':core:datastore')
