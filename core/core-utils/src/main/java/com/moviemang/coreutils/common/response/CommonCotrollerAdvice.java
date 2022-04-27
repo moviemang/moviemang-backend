@@ -20,7 +20,7 @@ import java.util.List;
 
 @SuppressWarnings("rawtypes")
 @Slf4j
-@RestControllerAdvice	// @ExceptionHandler, @ModelAttribute, @InitBinder �� ����� �޼������ AOP�� ������ ��Ʈ�ѷ� �ܿ� �����ϱ� ���� ������� ������̼�
+@RestControllerAdvice	// @ExceptionHandler, @ModelAttribute, @InitBinder
 public class CommonCotrollerAdvice {
 	private static final List<ErrorCode> SPECIFIC_ALERT_TARGET_ERROR_CODE_LIST = Lists.newArrayList();
 
