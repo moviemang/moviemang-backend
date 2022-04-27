@@ -8,5 +8,6 @@ import com.moviemang.datastore.entity.maria.Member;
 public interface MemberService {
 	CommonResponse checkMailCertification(MailCertificationDto certificationDto);
     public Member regist(Member member);
-    public boolean checkEmail(String email);
+    public CommonResponse checkEmail(String email);
+    public CommonResponse checkNick(String nick);
 }

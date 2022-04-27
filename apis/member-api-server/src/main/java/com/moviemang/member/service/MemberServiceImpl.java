@@ -5,13 +5,10 @@ import com.moviemang.datastore.repository.maria.MemberRepository;
 import com.moviemang.member.encrypt.CommonEncoder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -33,15 +30,17 @@ import lombok.extern.slf4j.Slf4j;
 public class MemberServiceImpl implements MemberService{
 
     private MemberRepository memberRepository;
-
-
     private CommonEncoder commonEncoder;
+	private MailCertificationRepository mailRepo;
+	private MailUtil mailUtil;
+	@Autowired
+	public MemberServiceImpl(MailUtil mailUtil, MailCertificationRepository mailRepo,MemberRepository memberRepository) {
+		this.mailRepo = mailRepo;
+		this.mailUtil = mailUtil;
+		this.memberRepository = memberRepository;
+		this.commonEncoder = new CommonEncoder();
 
-    @Autowired
-    public MemberServiceImpl(MemberRepository memberRepository,CommonEncoder commonEncoder){
-        this.memberRepository = memberRepository;
-        this.commonEncoder = commonEncoder;
-    }
+	}
 
     @Override
     public Member regist(Member member) {
@@ -55,21 +54,20 @@ public class MemberServiceImpl implements MemberService{
     }
 
     @Override
-    public boolean checkEmail(String email) {
-        Optional<Member> duplicatedUser =memberRepository.findMemberByMemberEmail(email);
+    public CommonResponse checkEmail(String email) {
+        int duplicatedUser = memberRepository.countMemberByMemberEmail(email);
 
-        return duplicatedUser.isPresent()?true:false;
+		if(!(duplicatedUser>0)) return CommonResponse.success(CommonResponse.Result.FAIL);
+		else return CommonResponse.success(CommonResponse.Result.SUCCESS);
 
     }
 
-	private MailCertificationRepository mailRepo;
+	@Override
+	public CommonResponse checkNick(String nick) {
+		int duplicatedUser = memberRepository.countMemberByMemberName(nick);
 
-	private MailUtil mailUtil;
-
-	@Autowired
-	public MemberServiceImpl(MailUtil mailUtil, MailCertificationRepository mailRepo) {
-		this.mailRepo = mailRepo;
-		this.mailUtil = mailUtil;
+		if(!(duplicatedUser>0)) return CommonResponse.success(CommonResponse.Result.FAIL);
+		else return CommonResponse.success(CommonResponse.Result.SUCCESS);
 	}
 
 	/**
@@ -105,7 +103,7 @@ public class MemberServiceImpl implements MemberService{
 		return true;
 	}
 
-	/**
+	/*
 	 * 이메일 인증 버튼 클릭 시 인증번호 및 유효시간 체크
 	 * @param memberEmail
 	 * @param mailCertificationMsg
