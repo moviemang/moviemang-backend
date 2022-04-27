@@ -53,18 +53,11 @@ public class MemberController {
     }
     @GetMapping(path = "/emailcheck/{email}")
     public CommonResponse getEmailCheck(@PathVariable(value = "") String email){
-
-        boolean isDuplicated =memberService.checkEmail(email);
-        if(isDuplicated){
-            return CommonResponse.builder()
-                .result(CommonResponse.Result.FAIL)
-                .build();
-        }else{
-            return CommonResponse.builder()
-                .result(CommonResponse.Result.SUCCESS)
-                .build();
-        }
-
+        return memberService.checkEmail(email);
+    }
+    @GetMapping(path = "/nickcheck/{nick}")
+    public CommonResponse getNickCheck(@PathVariable(value = "") String nick){
+        return memberService.checkNick(nick);
     }
 
     /**
