@@ -59,9 +59,6 @@ public class AuthenticationService {
 
         new ObjectMapper().writeValue(response.getOutputStream(), tokenInfo);
 
-//        response.addHeader("access_token", BEARER_PREFIX + " " + accessJwtToken);
-//        response.addHeader("refresh_token",  createRefreshToken(authentication.getName()));
-
     }
 
     public static TokenInfo createToken(String username, List<String> roles){
@@ -75,10 +72,10 @@ public class AuthenticationService {
 
     public static String generateToken(Claims claims, Date expirationDt) {
         return Jwts.builder()
-                .setClaims(claims)// 정보 저장
+                .setClaims(claims)
                 .setIssuedAt(new Date())
-                .setExpiration(expirationDt)// set Expire Time
-                .signWith(SignatureAlgorithm.HS256, SIGNINGKEY)// set algorithm, signature secret 값
+                .setExpiration(expirationDt)
+                .signWith(SignatureAlgorithm.HS256, SIGNINGKEY)
                 .compact();
     }
 
