@@ -1,4 +1,4 @@
-package com.moviemang.datastore.domain;
+package com.moviemang.datastore.dto;
 
 import javax.validation.constraints.NotNull;
 
