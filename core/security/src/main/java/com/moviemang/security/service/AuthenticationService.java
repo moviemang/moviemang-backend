@@ -37,9 +37,13 @@ public class AuthenticationService {
     static final String SIGNINGKEY = "moviemang-key";
     static final String BEARER_PREFIX = "Bearer";
 
-    @Autowired
+
     private UserDetailServiceImpl userDetailsService;
 
+    @Autowired
+    public AuthenticationService(UserDetailServiceImpl userDetailsService) {
+        this.userDetailsService = userDetailsService;
+    }
 
     //    static public void creatJwtToken(HttpServletResponse response, String username) {
     public static void creatJwtToken(HttpServletResponse response, Authentication authentication) throws IOException {
@@ -109,10 +113,15 @@ public class AuthenticationService {
         return null;
     }
 
-    public static String getUserPk(String token) {
-        return Jwts.parser().setSigningKey(SIGNINGKEY)
+    public static Claims getUserPk(String token) {
+        Claims cliam = Jwts.parser()
+                .setSigningKey(SIGNINGKEY)
                 .parseClaimsJws(token)
-                .getBody().getSubject();
+                .getBody();
+        System.out.println(cliam);
+        System.out.println(cliam.get("username"));
+
+        return cliam;
     }
 
     public static String resolveToken(HttpServletRequest request) {
@@ -122,7 +131,9 @@ public class AuthenticationService {
     public static boolean validateToken(String jwtToken, HttpServletRequest request) {
 
         try {
-            Jws<Claims> claims = Jwts.parser().setSigningKey(SIGNINGKEY).parseClaimsJws(jwtToken);
+            Jws<Claims> claims = Jwts.parser()
+                    .setSigningKey(SIGNINGKEY)
+                    .parseClaimsJws(jwtToken);
             return !claims.getBody().getExpiration().before(new Date());
         } catch (SignatureException ex) {
             log.error("Invalid JWT Signature");
@@ -150,7 +161,7 @@ public class AuthenticationService {
     public TokenInfo refreshAccessToken(HttpServletRequest request, String refreshToken){
 
         if (validateToken(refreshToken, request)) {
-            String email = getUserPk(refreshToken);
+            String email = getUserPk(refreshToken).get("username",String.class);
             CustomMember member = (CustomMember) userDetailsService.loadUserByUsername(email);
 
             TokenInfo refreshAccessToken = createToken(member.getUsername(), Arrays.asList("ROLE_USER"));
