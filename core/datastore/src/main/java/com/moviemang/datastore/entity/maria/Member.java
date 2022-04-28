@@ -38,8 +38,7 @@ public class Member extends BaseTimeEntity {
     private String memberType;
 
     @Builder
-    public Member(Long memberId, String memberEmail, String memberName, String memberPassword, String memberType,
-                  String regDate, String modDate) {
+    public Member(Long memberId, String memberEmail, String memberName, String memberPassword, String memberType) {
         this.memberId = memberId;
         this.memberEmail = memberEmail;
         this.memberPassword = memberPassword;

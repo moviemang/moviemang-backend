@@ -1,5 +1,7 @@
 package com.moviemang.member;
 
+import com.moviemang.coreutils.common.response.CommonResponse;
+import com.moviemang.datastore.dto.member.MemberJoinDto;
 import com.moviemang.datastore.entity.maria.Member;
 import com.moviemang.member.service.MemberService;
 import lombok.extern.slf4j.Slf4j;
@@ -22,18 +24,19 @@ class MemberApiServerApplicationTests {
 
     @Test
     void registMember() {
-        Member member = Member.builder()
+        MemberJoinDto member = MemberJoinDto.builder()
                 .memberEmail("testuser45@gmail.com")
                 .memberName("쿠1쿠2쿠3")
                 .memberPassword("testpassword1354")
                 .build();
+
         memberService.regist(member);
         log.info("member :  "+member.toString());
     }
     @Test
     void checkEmail() {
         String email = "testuser5@gmail.com";
-        boolean isDuplicated =memberService.checkEmail(email);
+        CommonResponse isDuplicated =memberService.checkEmail(email);
 
         log.info("member :  "+isDuplicated);
     }

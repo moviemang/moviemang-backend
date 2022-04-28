@@ -1,5 +1,6 @@
 package com.moviemang.member.service;
 
+import com.moviemang.datastore.dto.member.MemberJoinDto;
 import com.moviemang.datastore.entity.maria.Member;
 import com.moviemang.datastore.repository.maria.MemberRepository;
 import com.moviemang.member.encrypt.CommonEncoder;
@@ -12,19 +13,17 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
 import com.moviemang.coreutils.common.exception.BaseException;
 import com.moviemang.coreutils.common.response.CommonResponse;
 import com.moviemang.coreutils.common.response.ErrorCode;
-import com.moviemang.datastore.domain.MailCertificationDto;
+import com.moviemang.datastore.dto.MailCertificationDto;
 import com.moviemang.datastore.entity.maria.MailCertification;
 import com.moviemang.datastore.repository.maria.MailCertificationRepository;
 import com.moviemang.member.util.CreateCertificationUtil;
 import com.moviemang.member.util.MailUtil;
+import org.springframework.transaction.annotation.Transactional;
 
-import lombok.extern.slf4j.Slf4j;
-
+@Transactional(rollbackFor=Exception.class)
 @Service
 @Slf4j
 public class MemberServiceImpl implements MemberService{
@@ -43,30 +42,42 @@ public class MemberServiceImpl implements MemberService{
 	}
 
     @Override
-    public Member regist(Member member) {
-        log.info("");
-        // 비밀번호 암호화
-        member.setMemberPassword(commonEncoder.encode(member.getMemberPassword()));
+    public CommonResponse regist(MemberJoinDto memberJoinDto) {
 
-        // regist 처리
-        memberRepository.save(member);
-        return null;
+        // 비밀번호 암호화
+		String encodePassword = commonEncoder.encode(memberJoinDto.getMemberPassword());
+		Member joinUser =Member.builder()
+				.memberEmail(memberJoinDto.getMemberEmail())
+				.memberName(memberJoinDto.getMemberName())
+				.memberPassword(encodePassword)
+				.build();
+
+		Member resultMember = memberRepository.save(joinUser);
+
+		// if else로 돌려주는게 아니라 Exception 클래스에서 하는게 맞지 않을까? 논의 필요
+		if(resultMember!=null){
+			return CommonResponse.builder()
+					.result(CommonResponse.Result.SUCCESS)
+					.status(HttpStatus.CREATED)
+					.build();
+		}else{
+			return CommonResponse.fail(ErrorCode.COMMON_ILLEGAL_STATUS);
+		}
     }
 
     @Override
     public CommonResponse checkEmail(String email) {
         int duplicatedUser = memberRepository.countMemberByMemberEmail(email);
 
-		if(!(duplicatedUser>0)) return CommonResponse.success(CommonResponse.Result.FAIL);
+		if(duplicatedUser!=0) return CommonResponse.success(CommonResponse.Result.FAIL);
 		else return CommonResponse.success(CommonResponse.Result.SUCCESS);
-
     }
 
 	@Override
 	public CommonResponse checkNick(String nick) {
 		int duplicatedUser = memberRepository.countMemberByMemberName(nick);
 
-		if(!(duplicatedUser>0)) return CommonResponse.success(CommonResponse.Result.FAIL);
+		if(!(duplicatedUser==0)) return CommonResponse.success(CommonResponse.Result.FAIL);
 		else return CommonResponse.success(CommonResponse.Result.SUCCESS);
 	}
 

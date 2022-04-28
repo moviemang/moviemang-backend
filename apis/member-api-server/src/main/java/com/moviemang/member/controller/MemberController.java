@@ -1,11 +1,10 @@
 package com.moviemang.member.controller;
 
 import com.moviemang.coreutils.common.response.CommonResponse;
-import com.moviemang.coreutils.common.response.ErrorCode;
+import com.moviemang.datastore.dto.member.MemberJoinDto;
 import com.moviemang.datastore.entity.maria.Member;
 import com.moviemang.member.service.MemberService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.validation.Errors;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -16,9 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.moviemang.coreutils.common.response.CommonResponse;
-import com.moviemang.datastore.domain.MailCertificationDto;
-import com.moviemang.member.service.MemberService;
+import com.moviemang.datastore.dto.MailCertificationDto;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -37,26 +34,18 @@ public class MemberController {
     }
 
     @PostMapping(path = "/join")
-    public CommonResponse postRegist(@ModelAttribute @Validated Member member, Errors errors){
+    public CommonResponse postRegist(@ModelAttribute @Validated MemberJoinDto memberJoinDto, Errors errors){
 
+        return memberService.regist(memberJoinDto);
 
-        Member newbie = memberService.regist(member);
-        if(newbie!=null){
-            return CommonResponse.builder()
-                    .result(CommonResponse.Result.SUCCESS)
-                    .status(HttpStatus.CREATED)
-                    .build();
-        }else{
-
-            return CommonResponse.fail(ErrorCode.COMMON_ILLEGAL_STATUS);
-        }
     }
     @GetMapping(path = "/emailcheck/{email}")
     public CommonResponse getEmailCheck(@PathVariable(value = "") String email){
         return memberService.checkEmail(email);
     }
     @GetMapping(path = "/nickcheck/{nick}")
-    public CommonResponse getNickCheck(@PathVariable(value = "") String nick){
+    public CommonResponse getNickCheck(@PathVariable(value = "") String nick)
+    {
         return memberService.checkNick(nick);
     }
 
