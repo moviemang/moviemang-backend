@@ -19,9 +19,7 @@ public enum ErrorCode {
     AUTH_UNSUPPORTED_JWT("토큰이 유효하지 않습니다."),
     AUTH_INVALID_JWT("유효하지 않은 토큰입니다."),
     AUTH_EXPIRED_JWT("토큰 유효시간이 지났습니다."),
-    AUTH_REFRESH_TOKEN_EXPIRED("리프레시 토큰 유효시간이 지났습니다.");
-
-    COMMON_ILLEGAL_STATUS("잘못된 상태값입니다."),
+    AUTH_REFRESH_TOKEN_EXPIRED("리프레시 토큰 유효시간이 지났습니다."),
 
 	// Mail Exception
     MAIL_NOT_FOUND("이미 사용중인 이메일입니다"),

@@ -5,6 +5,7 @@ import com.moviemang.coreutils.common.response.CommonResponse;
 import com.moviemang.coreutils.common.response.ErrorCode;
 import com.moviemang.datastore.entity.maria.Member;
 import com.moviemang.datastore.repository.maria.MemberRepository;
+import com.moviemang.security.domain.CustomMember;
 import com.moviemang.security.domain.TokenInfo;
 import io.jsonwebtoken.*;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +16,7 @@ import org.springframework.security.authentication.AuthenticationServiceExceptio
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
@@ -34,12 +36,12 @@ public class AuthenticationService {
     private static long ACCESS_TOKEN_VALID_SECONDS = 3 * 60 * 1000L; // default 5minute
     static final String SIGNINGKEY = "moviemang-key";
     static final String BEARER_PREFIX = "Bearer";
+
     @Autowired
-    private MemberRepository memberRepository;
+    private UserDetailServiceImpl userDetailsService;
 
 
-
-//    static public void creatJwtToken(HttpServletResponse response, String username) {
+    //    static public void creatJwtToken(HttpServletResponse response, String username) {
     public static void creatJwtToken(HttpServletResponse response, Authentication authentication) throws IOException {
 //        Claims claims = Jwts.claims();
 //        claims.put("username", authentication.getName());
@@ -110,7 +112,7 @@ public class AuthenticationService {
         return null;
     }
 
-    public String getUserPk(String token) {
+    public static String getUserPk(String token) {
         return Jwts.parser().setSigningKey(SIGNINGKEY)
                 .parseClaimsJws(token)
                 .getBody().getSubject();
@@ -120,7 +122,7 @@ public class AuthenticationService {
         return request.getHeader("Authorization");
     }
 
-    public boolean validateToken(String jwtToken, HttpServletRequest request) {
+    public static boolean validateToken(String jwtToken, HttpServletRequest request) {
 
         try {
             Jws<Claims> claims = Jwts.parser().setSigningKey(SIGNINGKEY).parseClaimsJws(jwtToken);
@@ -152,10 +154,9 @@ public class AuthenticationService {
 
         if (validateToken(refreshToken, request)) {
             String email = getUserPk(refreshToken);
-            Member member = memberRepository.findByEmail(email)
-                    .orElseThrow(() -> new AuthenticationServiceException(ErrorCode.USER_NOT_FOUND.getErrorMsg()));
+            CustomMember member = (CustomMember) userDetailsService.loadUserByUsername(email);
 
-            TokenInfo refreshAccessToken = createToken(member.getEmail(), Arrays.asList("ROLE_USER"));
+            TokenInfo refreshAccessToken = createToken(member.getUsername(), Arrays.asList("ROLE_USER"));
 
             return refreshAccessToken;
         } else {

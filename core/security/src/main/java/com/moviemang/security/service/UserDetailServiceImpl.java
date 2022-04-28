@@ -35,7 +35,7 @@ public class UserDetailServiceImpl implements UserDetailsService {
 
     @Override
     public CustomMember loadUserByUsername(String username) throws UsernameNotFoundException {
-        Member user = memberRepository.findByEmail(username)
+        Member user = memberRepository.findByMemberEmail(username)
                 .orElseThrow(()->new UsernameNotFoundException("Member: "+ username+ " not found"));
         return buildUserForAuthentication(user, username,  Arrays.asList(new SimpleGrantedAuthority("ROLE_USER")));
     }
@@ -43,10 +43,10 @@ public class UserDetailServiceImpl implements UserDetailsService {
     private CustomMember buildUserForAuthentication(Member member, String username, List<GrantedAuthority> authorities) {
         if(member != null) {
             CustomMember customUser = CustomMember.builder()
-                    .id(member.getId())
+                    .id(member.getMemberId())
                     .username(username)
                     .authorities(authorities)
-                    .password(member.getPassword())
+                    .password(member.getMemberPassword())
                     .accountNonExpired(true)
                     .enabled(true)
                     .credentialsNonExpired(true)

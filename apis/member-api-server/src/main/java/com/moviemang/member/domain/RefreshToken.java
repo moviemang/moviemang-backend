@@ -7,5 +7,5 @@ import lombok.Data;
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 @Data
 public class RefreshToken {
-    private String accessToken;
+    private String refreshToken;
 }
