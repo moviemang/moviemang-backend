@@ -33,12 +33,12 @@ public class MemberServiceImpl implements MemberService{
 	private MailCertificationRepository mailRepo;
 	private MailUtil mailUtil;
 	@Autowired
-	public MemberServiceImpl(MailUtil mailUtil, MailCertificationRepository mailRepo,MemberRepository memberRepository) {
+	public MemberServiceImpl(MailUtil mailUtil, MailCertificationRepository mailRepo,
+							 MemberRepository memberRepository,CommonEncoder commonEncoder) {
 		this.mailRepo = mailRepo;
 		this.mailUtil = mailUtil;
 		this.memberRepository = memberRepository;
-		this.commonEncoder = new CommonEncoder();
-
+		this.commonEncoder = commonEncoder;
 	}
 
     @Override
