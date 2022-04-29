@@ -20,9 +20,7 @@ public class MailUserServiceImpl implements MailUserService{
 		this.mailRepo = mailRepo;
 	}
 	@Override
-	public boolean memberJoin(MailServiceUser mailServiceUser) {
+	public void memberJoin(MailServiceUser mailServiceUser) {
 		mailRepo.save(mailServiceUser);
-
-		return false;
 	}
 }

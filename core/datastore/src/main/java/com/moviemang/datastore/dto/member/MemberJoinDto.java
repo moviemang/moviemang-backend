@@ -16,7 +16,6 @@ import javax.validation.constraints.NotBlank;
 public class MemberJoinDto extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @JsonProperty("member_id")
     @Column(name = "member_id")
     private Long memberId;
 
@@ -35,13 +34,15 @@ public class MemberJoinDto extends BaseTimeEntity {
     @Column(name = "member_password")
     private String memberPassword; // 비밀번호
 
+    private String mail_service_useYn; //구독종류
     @Builder
     public MemberJoinDto(Long memberId, String memberEmail, String memberName,
-                         String memberPassword) {
+                         String memberPassword,String mail_service_useYn) {
         this.memberId = memberId;
         this.memberEmail = memberEmail;
         this.memberPassword = memberPassword;
         this.memberName = memberName;
+        this.mail_service_useYn = mail_service_useYn;
     }
 
 }

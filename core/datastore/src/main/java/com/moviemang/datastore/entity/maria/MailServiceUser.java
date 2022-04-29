@@ -1,16 +1,14 @@
 package com.moviemang.datastore.entity.maria;
 
-import lombok.Builder;
-import lombok.Data;
-import org.springframework.data.annotation.Id;
+import lombok.*;
 
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Table;
+import javax.persistence.*;
 
-@Data
-@Table(name = "mail_service_user")
+@Entity(name = "mail_service_user")
+@Getter
+@Setter
+@ToString
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class MailServiceUser extends BaseTimeEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,7 +22,6 @@ public class MailServiceUser extends BaseTimeEntity{
     private String contentType;
 
     @Builder
-
     public MailServiceUser(Long mailServiceId,Long memberId, String memberEmail, String contentType) {
         this.mailServiceId = mailServiceId;
         this.memberId = memberId;

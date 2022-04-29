@@ -1,6 +1,7 @@
 package com.moviemang.member.service;
 
 import com.moviemang.datastore.dto.member.MemberJoinDto;
+import com.moviemang.datastore.entity.maria.MailServiceUser;
 import com.moviemang.datastore.entity.maria.Member;
 import com.moviemang.datastore.repository.maria.MemberRepository;
 import com.moviemang.member.encrypt.CommonEncoder;
@@ -32,13 +33,16 @@ public class MemberServiceImpl implements MemberService{
     private CommonEncoder commonEncoder;
 	private MailCertificationRepository mailRepo;
 	private MailUtil mailUtil;
+	private MailUserServiceImpl mailUserServiceImpl;
 	@Autowired
 	public MemberServiceImpl(MailUtil mailUtil, MailCertificationRepository mailRepo,
-							 MemberRepository memberRepository,CommonEncoder commonEncoder) {
+			 MemberRepository memberRepository,MailUserServiceImpl mailUserServiceImpl,
+			 CommonEncoder commonEncoder) {
 		this.mailRepo = mailRepo;
 		this.mailUtil = mailUtil;
 		this.memberRepository = memberRepository;
 		this.commonEncoder = commonEncoder;
+		this.mailUserServiceImpl = mailUserServiceImpl;
 	}
 
     @Override
@@ -52,7 +56,16 @@ public class MemberServiceImpl implements MemberService{
 				.memberPassword(encodePassword)
 				.build();
 
+		//저장 실행 후 멤버
 		Member resultMember = memberRepository.save(joinUser);
+		//구독 서비스 실행시 구독 사용자 테이블에 추가
+		if(memberJoinDto.getMail_service_useYn()!=null){
+			mailUserServiceImpl.memberJoin(MailServiceUser.builder()
+				.memberId(resultMember.getMemberId())
+				.memberEmail(resultMember.getMemberEmail())
+				.contentType(memberJoinDto.getMail_service_useYn())
+				.build());
+		}
 
 		// if else로 돌려주는게 아니라 Exception 클래스에서 하는게 맞지 않을까? 논의 필요
 		if(resultMember!=null){
@@ -63,6 +76,7 @@ public class MemberServiceImpl implements MemberService{
 		}else{
 			return CommonResponse.fail(ErrorCode.COMMON_ILLEGAL_STATUS);
 		}
+
     }
 
     @Override

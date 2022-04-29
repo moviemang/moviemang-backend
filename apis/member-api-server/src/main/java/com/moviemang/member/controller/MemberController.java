@@ -21,9 +21,8 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @CrossOrigin(origins = "*")
-@RequestMapping(path = "/member", consumes = "application/json")
+@RequestMapping(path = "/member")
 @RestController
-
 public class MemberController {
 
     private MemberService memberService;
@@ -40,11 +39,12 @@ public class MemberController {
 
     }
     @GetMapping(path = "/emailcheck/{email}")
-    public CommonResponse getEmailCheck(@PathVariable(value = "") String email){
+    public CommonResponse getEmailCheck(@PathVariable(value = "email") String email){
+        log.info("들어옴 ㅋㅋㅋㅋ");
         return memberService.checkEmail(email);
     }
     @GetMapping(path = "/nickcheck/{nick}")
-    public CommonResponse getNickCheck(@PathVariable(value = "") String nick)
+    public CommonResponse getNickCheck(@PathVariable String nick)
     {
         return memberService.checkNick(nick);
     }
