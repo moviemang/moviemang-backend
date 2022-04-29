@@ -3,39 +3,32 @@ package com.moviemang.playlist.controller;
 import com.moviemang.coreutils.common.response.CommonResponse;
 import com.moviemang.playlist.domain.Playlist;
 import com.moviemang.playlist.service.PlaylistService;
+import com.moviemang.security.uitls.AuthenticationUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
 
 @Slf4j
 @RestController
 public class PlaylistController {
 
     private PlaylistService playlistService;
+    private AuthenticationUtil authenticationUtil;
 
     @Autowired
-    public PlaylistController(PlaylistService playlistService) {
+    public PlaylistController(PlaylistService playlistService, AuthenticationUtil authenticationUtil) {
         this.playlistService = playlistService;
+        this.authenticationUtil = authenticationUtil;
     }
 
     @GetMapping("/test")
-    @ResponseStatus(HttpStatus.OK)
-    public void getTest(){
-        log.info("GetMapping");
+    public void getTest(HttpServletRequest httpServletRequest, Playlist.Request request){
+        authenticationUtil.checkAuthenticationInfo(httpServletRequest, request);
+        System.out.println(request.getEmail());
+        System.out.println(request.getId());
     }
 
-    @PostMapping( "/test")
-    @ResponseStatus(HttpStatus.CREATED)
-    public CommonResponse postTest(){
-        log.info("PostMapping");
-        CommonResponse commonResponse = CommonResponse.success(new Playlist());
-        return new CommonResponse<>();
-    }
-
-    @DeleteMapping("/test")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delteTest(){
-        log.info("DeleteMapping");
-    }
 }

@@ -82,6 +82,7 @@ project(':apis:playlist-api-server'){
     dependencies {
         implementation project(':core:datastore')
         implementation project(':core:core-utils')
+        implementation project(':core:security')
     }
 }
 

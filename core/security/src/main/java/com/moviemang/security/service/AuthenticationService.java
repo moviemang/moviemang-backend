@@ -3,12 +3,16 @@ package com.moviemang.security.service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.moviemang.coreutils.common.response.CommonResponse;
 import com.moviemang.coreutils.common.response.ErrorCode;
+import com.moviemang.coreutils.model.vo.CommonParam;
 import com.moviemang.datastore.entity.maria.Member;
 import com.moviemang.datastore.repository.maria.MemberRepository;
 import com.moviemang.security.domain.CustomMember;
 import com.moviemang.security.domain.TokenInfo;
 import io.jsonwebtoken.*;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.hibernate.service.spi.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -31,9 +35,9 @@ import static java.util.Collections.emptyList;
 public class AuthenticationService {
 
 //    private static long REFRESH_TOKEN_VALID_SECONDS = 60 * 60 * 24 * 30; // default 30 days.
-//    private static long ACCESS_TOKEN_VALID_SECONDS = 60 * 60 * 12; // default 12 hours.
+    private static long ACCESS_TOKEN_VALID_SECONDS = 60 * 60 * 12 * 1000L; // default 12 hours.
     private static long REFRESH_TOKEN_VALID_SECONDS = 60 * 60 * 24 * 7 * 1000L; // default 7일
-    private static long ACCESS_TOKEN_VALID_SECONDS = 3 * 60 * 1000L; // default 5minute
+//    private static long ACCESS_TOKEN_VALID_SECONDS = 3 * 60 * 1000L; // default 5minute
     static final String SIGNINGKEY = "moviemang-key";
     static final String BEARER_PREFIX = "Bearer";
 
@@ -47,27 +51,22 @@ public class AuthenticationService {
 
     //    static public void creatJwtToken(HttpServletResponse response, String username) {
     public static void creatJwtToken(HttpServletResponse response, Authentication authentication) throws IOException {
-//        Claims claims = Jwts.claims();
-//        claims.put("username", authentication.getName());
-//        String accessJwtToken = Jwts.builder()
-//                .setClaims(claims)
-//                .setIssuedAt(new Date(System.currentTimeMillis()))
-//                .setExpiration(new Date(System.currentTimeMillis() + ACCESS_TOKEN_VALID_SECONDS))
-//                .signWith(SignatureAlgorithm.HS256, SIGNINGKEY)
-//                .compact();
 
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.addHeader("Access-Control-Expose-Headers", "Authorization");
 
-        TokenInfo tokenInfo = createToken(authentication.getName(), Arrays.asList("ROLE_USER"));
+        CustomMember customMember = (CustomMember) authentication.getPrincipal();
+        TokenInfo tokenInfo = createToken(authentication.getName(),customMember.getId(), Arrays.asList("ROLE_USER"));
+
 
         new ObjectMapper().writeValue(response.getOutputStream(), tokenInfo);
 
     }
 
-    public static TokenInfo createToken(String username, List<String> roles){
+    public static TokenInfo createToken(String username, Long userNo, List<String> roles){
         Claims claims = Jwts.claims();
         claims.put("username", username);
+        claims.put("id", userNo);
         return TokenInfo.builder()
                 .accessToken(BEARER_PREFIX + " " + generateToken(claims, new Date(System.currentTimeMillis() + ACCESS_TOKEN_VALID_SECONDS)))
                 .refreshToken(generateToken(claims, new Date(System.currentTimeMillis() + REFRESH_TOKEN_VALID_SECONDS)))
@@ -98,13 +97,13 @@ public class AuthenticationService {
     public static Authentication getAuthentication(HttpServletRequest request) {
         String token = resolveToken(request);
         if (token != null) {
-            String user = Jwts.parser()
+            String user = (String) Jwts.parser()
                     .setSigningKey(SIGNINGKEY)
                     .parseClaimsJws(token.replace(BEARER_PREFIX, ""))
                     .getBody()
-                    .getSubject();
+                    .get("username");
 
-            if (user != null) {
+            if (user != null && StringUtils.isNoneEmpty(user)) {
                 return new UsernamePasswordAuthenticationToken(user, null, emptyList());
             } else {
                 throw new RuntimeException("Authentication failed");
@@ -118,10 +117,22 @@ public class AuthenticationService {
                 .setSigningKey(SIGNINGKEY)
                 .parseClaimsJws(token)
                 .getBody();
-        System.out.println(cliam);
-        System.out.println(cliam.get("username"));
 
         return cliam;
+    }
+
+    public CommonParam getCommonParam(String token) {
+
+        Claims cliam = Jwts.parser()
+                .setSigningKey(SIGNINGKEY)
+                .parseClaimsJws(token)
+                .getBody();
+
+        Integer id = (Integer) cliam.get("id");
+        return CommonParam.builder()
+                .email((String) cliam.get("username"))
+                .id(id.longValue())
+                .build();
     }
 
     public static String resolveToken(HttpServletRequest request) {
@@ -164,11 +175,11 @@ public class AuthenticationService {
             String email = getUserPk(refreshToken).get("username",String.class);
             CustomMember member = (CustomMember) userDetailsService.loadUserByUsername(email);
 
-            TokenInfo refreshAccessToken = createToken(member.getUsername(), Arrays.asList("ROLE_USER"));
+            TokenInfo refreshAccessToken = createToken(member.getUsername(), member.getId(),Arrays.asList("ROLE_USER"));
 
             return refreshAccessToken;
         } else {
-            throw new AuthenticationServiceException(ErrorCode.AUTH_REFRESH_TOKEN_EXPIRED.getErrorMsg());
+            throw new AuthenticationServiceException(ErrorCode.AUTH_REFRESH_TOKEN_INVALID.getErrorMsg());
         }
     }
 

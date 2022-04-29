@@ -58,8 +58,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .addFilterBefore(new LoginFilter("/login", authenticationManager()),
                         UsernamePasswordAuthenticationFilter.class);
-//                .addFilterBefore(new AuthenticationFilter(),
-//                        UsernamePasswordAuthenticationFilter.class);
 
         http.logout()
                 .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))

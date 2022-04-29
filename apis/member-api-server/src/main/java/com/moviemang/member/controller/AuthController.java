@@ -33,7 +33,7 @@ public class AuthController {
             tokenInfo = authenticationService.refreshAccessToken(request, refreshToken.getRefreshToken());
 
         } catch (Exception e) {
-            return CommonResponse.fail(ErrorCode.AUTH_REFRESH_TOKEN_EXPIRED);
+            return CommonResponse.fail(ErrorCode.AUTH_REFRESH_TOKEN_INVALID);
         }
 
         return CommonResponse.success(tokenInfo);
