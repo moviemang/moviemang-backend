@@ -36,7 +36,8 @@ public class MemberJoinDto extends BaseTimeEntity {
     private String memberPassword; // 비밀번호
 
     @Builder
-    public MemberJoinDto(Long memberId, String memberEmail, String memberName, String memberPassword, String memberType) {
+    public MemberJoinDto(Long memberId, String memberEmail, String memberName,
+                         String memberPassword) {
         this.memberId = memberId;
         this.memberEmail = memberEmail;
         this.memberPassword = memberPassword;

@@ -24,6 +24,7 @@ public class MailServiceUser extends BaseTimeEntity{
     private String contentType;
 
     @Builder
+
     public MailServiceUser(Long mailServiceId,Long memberId, String memberEmail, String contentType) {
         this.mailServiceId = mailServiceId;
         this.memberId = memberId;
