@@ -25,9 +25,10 @@ class MemberApiServerApplicationTests {
     @Test
     void registMember() {
         MemberJoinDto member = MemberJoinDto.builder()
-                .memberEmail("testuser45@gmail.com")
-                .memberName("쿠1쿠2쿠3")
-                .memberPassword("testpassword1354")
+                .memberEmail("testusera45@gmail.com")
+                .memberName("쿠1쿠2쿠3aa")
+                .memberPassword("testusera45")
+                .mail_service_useYn("영화")
                 .build();
 
         memberService.regist(member);
