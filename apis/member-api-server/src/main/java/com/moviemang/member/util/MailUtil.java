@@ -6,6 +6,8 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -13,12 +15,12 @@ import org.springframework.stereotype.Service;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@Service
+@Configuration
 public class MailUtil {
 	
 	@Autowired
 	private JavaMailSender mailSender;
-	
+
 	@SuppressWarnings("static-access")
 	public boolean certificationMailSend(String certificationMsg, String targetEmail) {
 		MimeMessage mail = mailSender.createMimeMessage();
@@ -36,7 +38,7 @@ public class MailUtil {
 		}
 		return true;
 	}
-	
+
 	@SuppressWarnings("static-access")
 	public boolean passwordRestMailSend(String certificationMsg, String targetEmail) {
 		MimeMessage mail = mailSender.createMimeMessage();

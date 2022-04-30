@@ -26,7 +26,6 @@ import lombok.extern.slf4j.Slf4j;
 @CrossOrigin(origins = "*")
 @RequestMapping(path = "/member", consumes = "application/json")
 @RestController
-
 public class MemberController {
 
     private MemberService memberService;
