@@ -20,7 +20,6 @@ import lombok.extern.slf4j.Slf4j;
 @CrossOrigin(origins = "*")
 @RequestMapping(path = "/member")
 @RestController
-
 public class MemberController {
 
     private MemberService memberService;
