@@ -1,15 +1,11 @@
 package com.moviemang.datastore.domain;
 
-import javax.validation.constraints.NotNull;
-
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.*;
+import org.springframework.format.annotation.DateTimeFormat;
 
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import javax.persistence.Column;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -17,20 +13,21 @@ import lombok.ToString;
 @ToString
 public class MailCertificationDto {
 
-	@NotNull
+	@Column(name = "member_email")
 	@JsonProperty("member_email")
 	private String memberEmail;
-	
-	@NotNull
+
+	@Column(name = "mail_certification_msg")
 	@JsonProperty("mail_certification_msg")
 	private String mailCertificationMsg;
-	
-	@NotNull
+
+	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	@Column(name = "clicked_time")
 	@JsonProperty("clicked_time")
-	private String clickedTime;
+	private LocalDateTime clickedTime;
 
 	@Builder
-	public MailCertificationDto(String memberEmail, String mailCertificationMsg, String clickedTime) {
+	public MailCertificationDto(String memberEmail, String mailCertificationMsg, LocalDateTime clickedTime) {
 		this.memberEmail = memberEmail;
 		this.mailCertificationMsg = mailCertificationMsg;
 		this.clickedTime = clickedTime;
