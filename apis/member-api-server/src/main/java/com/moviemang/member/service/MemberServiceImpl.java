@@ -1,9 +1,9 @@
 package com.moviemang.member.service;
 
-import com.moviemang.datastore.entity.maria.DeletedMember;
 import com.moviemang.datastore.entity.maria.Member;
 import com.moviemang.datastore.repository.maria.DeletedMemberRepository;
 import com.moviemang.datastore.repository.maria.MemberRepository;
+import com.moviemang.member.domain.DeletedMember;
 import com.moviemang.member.encrypt.CommonEncoder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,11 +81,11 @@ public class MemberServiceImpl implements MemberService{
 	 * @param memberId
 	 */
 	@Override
-	public CommonResponse deleteMember(Long memberId) {
+	public CommonResponse deleteMember(DeletedMember deletedMember) {
 		try{
-			System.out.println("[Service] delete member id :" + memberId);
+			System.out.println("[Service] delete member id :" + deletedMember);
 			// member 테이블에서 회원 삭제
-			memberRepository.deleteById(memberId);
+			memberRepository.deleteById(deletedMember.getId());
 
 			// deleted_member 테이블에 탈퇴 회원 추가
 //			deletedMemberRepository.save();

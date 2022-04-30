@@ -3,7 +3,9 @@ package com.moviemang.member.controller;
 import com.moviemang.coreutils.common.response.CommonResponse;
 import com.moviemang.coreutils.common.response.ErrorCode;
 import com.moviemang.datastore.entity.maria.Member;
+import com.moviemang.member.domain.DeletedMember;
 import com.moviemang.member.service.MemberService;
+import com.moviemang.security.uitls.AuthenticationUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.Errors;
@@ -16,6 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.extern.slf4j.Slf4j;
 
+import javax.servlet.http.HttpServletRequest;
+
 @Slf4j
 @CrossOrigin(origins = "*")
 @RequestMapping(path = "/member")
@@ -23,10 +27,12 @@ import lombok.extern.slf4j.Slf4j;
 public class MemberController {
 
     private MemberService memberService;
+    private AuthenticationUtil authenticationUtil;
 
     @Autowired
-    public MemberController(MemberService memberService) {
+    public MemberController(MemberService memberService, AuthenticationUtil authenticationUtil) {
         this.memberService = memberService;
+        this.authenticationUtil = authenticationUtil;
     }
 
     @PostMapping(path = "/join", consumes = "application/json")
@@ -63,10 +69,11 @@ public class MemberController {
 //    	return memberService.checkMailCertification(certificationDto);
 //    }
 
-    @DeleteMapping(path = "/{member_id}")
-    public CommonResponse deleteMember(@PathVariable("member_id") Long member_id){
-        System.out.println("[Controller] delete member id : " + member_id);
-        return memberService.deleteMember(member_id);
+    @DeleteMapping(path = "/")
+    public CommonResponse deleteMember(HttpServletRequest httpServletRequest, DeletedMember deletedMember){
+        System.out.println("[Controller] delete member id : " + deletedMember);
+        authenticationUtil.checkAuthenticationInfo(httpServletRequest, deletedMember);
+        return memberService.deleteMember(deletedMember);
     }
 
 }
