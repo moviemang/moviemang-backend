@@ -10,4 +10,5 @@ public interface MemberService {
     public Member regist(Member member);
     public CommonResponse checkEmail(String email);
     public CommonResponse checkNick(String nick);
+    public CommonResponse deleteMember(Long memberId);
 }

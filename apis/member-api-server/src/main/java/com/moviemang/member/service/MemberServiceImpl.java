@@ -1,6 +1,8 @@
 package com.moviemang.member.service;
 
+import com.moviemang.datastore.entity.maria.DeletedMember;
 import com.moviemang.datastore.entity.maria.Member;
+import com.moviemang.datastore.repository.maria.DeletedMemberRepository;
 import com.moviemang.datastore.repository.maria.MemberRepository;
 import com.moviemang.member.encrypt.CommonEncoder;
 import lombok.extern.slf4j.Slf4j;
@@ -9,6 +11,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import org.apache.commons.lang3.StringUtils;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -29,15 +32,18 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class MemberServiceImpl implements MemberService{
 
-    private MemberRepository memberRepository;
+	private MemberRepository memberRepository;
     private CommonEncoder commonEncoder;
+	private DeletedMemberRepository deletedMemberRepository;
 	private MailCertificationRepository mailRepo;
 	private MailUtil mailUtil;
 	@Autowired
-	public MemberServiceImpl(MailUtil mailUtil, MailCertificationRepository mailRepo,MemberRepository memberRepository) {
+	public MemberServiceImpl(MailUtil mailUtil, MailCertificationRepository mailRepo,
+							 MemberRepository memberRepository, DeletedMemberRepository deletedMemberRepository) {
 		this.mailRepo = mailRepo;
 		this.mailUtil = mailUtil;
 		this.memberRepository = memberRepository;
+		this.deletedMemberRepository = deletedMemberRepository;
 		this.commonEncoder = new CommonEncoder();
 
 	}
@@ -68,6 +74,51 @@ public class MemberServiceImpl implements MemberService{
 
 		if(!(duplicatedUser>0)) return CommonResponse.success(CommonResponse.Result.FAIL);
 		else return CommonResponse.success(CommonResponse.Result.SUCCESS);
+	}
+
+	/**
+	 * 회원 탈퇴
+	 * @param memberId
+	 */
+	@Override
+	public CommonResponse deleteMember(Long memberId) {
+		try{
+			System.out.println("[Service] delete member id :" + memberId);
+			// member 테이블에서 회원 삭제
+			memberRepository.deleteById(memberId);
+
+			// deleted_member 테이블에 탈퇴 회원 추가
+//			deletedMemberRepository.save();
+
+			return CommonResponse.builder()
+					.result(CommonResponse.Result.SUCCESS)
+					.message("회원 탈퇴가 완료되었습니다.")
+					.build();
+
+		}catch (EmptyResultDataAccessException e){
+			throw new BaseException(ErrorCode.COMMON_ENTITY_NOT_FOUND);
+
+		}catch (Exception e){
+			throw new BaseException(ErrorCode.COMMON_SYSTEM_ERROR);
+
+		}
+
+		/*
+		// 실패시 - TODO: HTTP STATUS 변경 필요 (nO_CONTENT 204)
+		{
+			"result": "FAIL",
+			"data": null,
+			"message": "존재하지 않는 엔티티입니다.",
+			"error_code": "COMMON_ENTITY_NOT_FOUND"
+		}
+		// 성공시
+		{
+			"result": "SUCCESS",
+			"data": "SUCCESS",
+			"message": null,
+			"error_code": null
+		}
+		 */
 	}
 
 	/**

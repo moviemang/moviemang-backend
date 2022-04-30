@@ -6,6 +6,8 @@ import lombok.*;
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity(name = "member")
 @Getter
@@ -46,4 +48,6 @@ public class Member extends BaseTimeEntity {
         this.memberName = memberName;
     }
 
+    @OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE)
+    private List<Board> board = new ArrayList<Board>();
 }

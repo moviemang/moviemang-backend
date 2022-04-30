@@ -9,22 +9,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.validation.Errors;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.moviemang.coreutils.common.response.CommonResponse;
-import com.moviemang.datastore.domain.MailCertificationDto;
-import com.moviemang.member.service.MemberService;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @CrossOrigin(origins = "*")
-@RequestMapping(path = "/member", consumes = "application/json")
+@RequestMapping(path = "/member")
 @RestController
 
 public class MemberController {
@@ -36,7 +30,7 @@ public class MemberController {
         this.memberService = memberService;
     }
 
-    @PostMapping(path = "/join")
+    @PostMapping(path = "/join", consumes = "application/json")
     public CommonResponse postRegist(@ModelAttribute @Validated Member member, Errors errors){
 
 
@@ -60,14 +54,20 @@ public class MemberController {
         return memberService.checkNick(nick);
     }
 
-    /**
-     * 이메일 인증 시 인증번호 확인
-     * @return {@link CommonResponse}
-     */
-	@PostMapping(path = "email/certification", produces = MediaType.APPLICATION_JSON_VALUE)
-    public CommonResponse checkCertification(@RequestBody MailCertificationDto certificationDto){
-    	log.info("certificationDto : {}", certificationDto.toString());
-    	return memberService.checkMailCertification(certificationDto);
+//    /**
+//     * 이메일 인증 시 인증번호 확인
+//     * @return {@link CommonResponse}
+//     */
+//	@PostMapping(path = "email/certification", produces = MediaType.APPLICATION_JSON_VALUE)
+//    public CommonResponse checkCertification(@RequestBody MailCertificationDto certificationDto){
+//    	log.info("certificationDto : {}", certificationDto.toString());
+//    	return memberService.checkMailCertification(certificationDto);
+//    }
+
+    @DeleteMapping(path = "/{member_id}")
+    public CommonResponse deleteMember(@PathVariable("member_id") Long member_id){
+        System.out.println("[Controller] delete member id : " + member_id);
+        return memberService.deleteMember(member_id);
     }
 
 }
