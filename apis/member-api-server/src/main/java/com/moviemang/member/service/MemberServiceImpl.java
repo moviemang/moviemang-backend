@@ -36,8 +36,7 @@ public class MemberServiceImpl implements MemberService{
 	private MailUserServiceImpl mailUserServiceImpl;
 	@Autowired
 	public MemberServiceImpl(MailUtil mailUtil, MailCertificationRepository mailRepo,
-			 MemberRepository memberRepository,MailUserServiceImpl mailUserServiceImpl,
-			 CommonEncoder commonEncoder) {
+			 MemberRepository memberRepository,MailUserServiceImpl mailUserServiceImpl,CommonEncoder commonEncoder) {
 		this.mailRepo = mailRepo;
 		this.mailUtil = mailUtil;
 		this.memberRepository = memberRepository;
@@ -45,53 +44,77 @@ public class MemberServiceImpl implements MemberService{
 		this.mailUserServiceImpl = mailUserServiceImpl;
 	}
 
+	/**
+	 * 회원가입 메소드
+	 * @author hwang.kh
+	 * @param memberJoinDto
+	 * @return {@link CommonResponse}
+	 */
     @Override
     public CommonResponse regist(MemberJoinDto memberJoinDto) {
 
         // 비밀번호 암호화
 		String encodePassword = commonEncoder.encode(memberJoinDto.getMemberPassword());
+		// 멤버 테이블에 넣을 정보 세팅
 		Member joinUser =Member.builder()
 				.memberEmail(memberJoinDto.getMemberEmail())
 				.memberName(memberJoinDto.getMemberName())
 				.memberPassword(encodePassword)
 				.build();
+		try {
+			Member resultMember = memberRepository.save(joinUser);
+			log.info("resultMember  : "+resultMember.toString());
 
-		//저장 실행 후 멤버
-		Member resultMember = memberRepository.save(joinUser);
-		//구독 서비스 실행시 구독 사용자 테이블에 추가
-		if(memberJoinDto.getMail_service_useYn()!=null){
-			mailUserServiceImpl.memberJoin(MailServiceUser.builder()
-				.memberId(resultMember.getMemberId())
-				.memberEmail(resultMember.getMemberEmail())
-				.contentType(memberJoinDto.getMail_service_useYn())
-				.build());
+			// if else로 돌려주는게 아니라 Exception 클래스에서 하는게 맞지 않을까? 논의 필요
+			if(resultMember==null){
+				return CommonResponse.fail(ErrorCode.COMMON_ILLEGAL_STATUS);
+			}
+			if(!memberJoinDto.getMailServiceUseYn().equalsIgnoreCase("")){
+				MailServiceUser mailServiceUser = MailServiceUser.builder()
+						.memberId(resultMember.getMemberId())
+						.memberEmail(resultMember.getMemberEmail())
+						.contentType(memberJoinDto.getMailServiceUseYn())
+						.build();
+				log.info("mailServiceUser  : "+mailServiceUser.toString());
+				MailServiceUser result = mailUserServiceImpl.memberJoin(mailServiceUser);
+
+				log.info("Result MailServiceUser  : "+result.toString());
+			}
+		}catch (Exception e){
+			e.printStackTrace();
+			throw new BaseException(ErrorCode.COMMON_SYSTEM_ERROR);
 		}
 
-		// if else로 돌려주는게 아니라 Exception 클래스에서 하는게 맞지 않을까? 논의 필요
-		if(resultMember!=null){
-			return CommonResponse.builder()
-					.result(CommonResponse.Result.SUCCESS)
-					.status(HttpStatus.CREATED)
-					.build();
-		}else{
-			return CommonResponse.fail(ErrorCode.COMMON_ILLEGAL_STATUS);
-		}
-
+		return CommonResponse.builder()
+				.result(CommonResponse.Result.SUCCESS)
+				.status(HttpStatus.CREATED)
+				.build();
     }
-
+	/**
+	 * 이메일 중복체크 메소드
+	 * @author hwang.kh
+	 * @param email
+	 * @return {@link CommonResponse}
+	 */
     @Override
     public CommonResponse checkEmail(String email) {
         int duplicatedUser = memberRepository.countMemberByMemberEmail(email);
 
-		if(duplicatedUser!=0) return CommonResponse.success(CommonResponse.Result.FAIL);
+		if(duplicatedUser!=0) return CommonResponse.fail(ErrorCode.MAIL_NOT_FOUND);
 		else return CommonResponse.success(CommonResponse.Result.SUCCESS);
     }
 
+	/**
+	 * 닉네임 중복체크 메소드
+	 * @author hwang.kh
+	 * @param nick
+	 * @return {@link CommonResponse}
+	 */
 	@Override
 	public CommonResponse checkNick(String nick) {
 		int duplicatedUser = memberRepository.countMemberByMemberName(nick);
 
-		if(!(duplicatedUser==0)) return CommonResponse.success(CommonResponse.Result.FAIL);
+		if(duplicatedUser!=0) return CommonResponse.fail(ErrorCode.NICK_NOT_FOUND);
 		else return CommonResponse.success(CommonResponse.Result.SUCCESS);
 	}
 

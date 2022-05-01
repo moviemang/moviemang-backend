@@ -33,16 +33,17 @@ public class MemberController {
     }
 
     @PostMapping(path = "/join")
-    public CommonResponse postRegist(@ModelAttribute @Validated MemberJoinDto memberJoinDto, Errors errors){
+    public CommonResponse postRegist(@RequestBody @Validated MemberJoinDto memberJoinDto){
 
         return memberService.regist(memberJoinDto);
-
     }
+    // Post로 Body에 넣어서  보내기
     @GetMapping(path = "/emailcheck/{email}")
     public CommonResponse getEmailCheck(@PathVariable(value = "email") String email){
         log.info("들어옴 ㅋㅋㅋㅋ");
         return memberService.checkEmail(email);
     }
+    // Post로 Body에 넣어서  보내기
     @GetMapping(path = "/nickcheck/{nick}")
     public CommonResponse getNickCheck(@PathVariable String nick)
     {
