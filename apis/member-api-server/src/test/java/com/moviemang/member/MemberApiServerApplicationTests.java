@@ -1,5 +1,6 @@
 package com.moviemang.member;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.moviemang.coreutils.common.response.CommonResponse;
 import com.moviemang.datastore.dto.member.MemberJoinDto;
 import com.moviemang.datastore.entity.maria.Member;
@@ -7,6 +8,7 @@ import com.moviemang.datastore.repository.maria.MemberRepository;
 import com.moviemang.member.service.MemberService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -51,14 +53,22 @@ class MemberApiServerApplicationTests {
 
     @Test
     void registMember() {
-        MemberJoinDto member = MemberJoinDto.builder()
+
+        MemberJoinDto memberJoinDto = MemberJoinDto.builder()
                 .memberEmail("testusera45@gmail.com")
                 .memberName("쿠1쿠2쿠3aa")
                 .memberPassword("testusera45")
-                .mail_service_useYn("영화")
+                .mailServiceUseYn("영화")
                 .build();
 
-        memberService.regist(member);
+        memberService.regist(memberJoinDto);
+        Member joinUser =Member.builder().build();
+        BeanUtils.copyProperties(memberJoinDto,joinUser,"memberId","mailServiceUseYn");
+
+//        memberService.regist(member);
+        log.info("memberJoinDto   :  "+memberJoinDto.toString());
+        log.info("joinUser   :  "+joinUser.toString());
+
     }
     @Test
     void checkEmail() {
@@ -69,13 +79,13 @@ class MemberApiServerApplicationTests {
     @Test
     void insertUser(){
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
-        Member member = Member.builder()
-                .memberEmail("test3@naver.com")
-                .memberName("test3")
-//                .memberPassword(bCryptPasswordEncoder.encode("pass2"))
-                .memberPassword("pass3")
+        MemberJoinDto memberJoinDto = MemberJoinDto.builder()
+                .memberEmail("testusera45@gmail.com")
+                .memberName("쿠1쿠2쿠3aa")
+                .memberPassword("testusera45")
+                .mailServiceUseYn("영화")
                 .build();
-        memberService.regist(member);
+        memberService.regist(memberJoinDto);
     }
 
     @Test
