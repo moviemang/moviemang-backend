@@ -11,6 +11,10 @@ public enum ErrorCode {
     COMMON_ENTITY_NOT_FOUND("존재하지 않는 엔티티입니다."),
     COMMON_ILLEGAL_STATUS("잘못된 상태값입니다."),
 
+    // Join CHECK Exception
+    NICK_NOT_FOUND("이미 사용중인 닉네임입니다"),
+
+    // Auth Exception
     USER_NOT_FOUND("회원을 찾을수 없습니다."),
 
     AUTH_INVALID_SIGNATURE_JWT("토큰이 유효하지 않습니다."),

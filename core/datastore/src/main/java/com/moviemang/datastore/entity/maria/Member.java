@@ -43,6 +43,7 @@ public class Member extends BaseTimeEntity {
         this.memberEmail = memberEmail;
         this.memberPassword = memberPassword;
         this.memberName = memberName;
+        this.memberType =  "N";
     }
 
 }

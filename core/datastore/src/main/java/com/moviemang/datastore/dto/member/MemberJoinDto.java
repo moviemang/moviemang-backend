@@ -34,15 +34,18 @@ public class MemberJoinDto extends BaseTimeEntity {
     @Column(name = "member_password")
     private String memberPassword; // 비밀번호
 
-    private String mail_service_useYn; //구독종류
+    @NotBlank
+    @JsonProperty("mail_service_useYn")
+    private String mailServiceUseYn; // 메일 구독 여부
+
     @Builder
     public MemberJoinDto(Long memberId, String memberEmail, String memberName,
-                         String memberPassword,String mail_service_useYn) {
+                         String memberPassword,String mailServiceUseYn) {
         this.memberId = memberId;
         this.memberEmail = memberEmail;
         this.memberPassword = memberPassword;
         this.memberName = memberName;
-        this.mail_service_useYn = mail_service_useYn;
+        this.mailServiceUseYn = mailServiceUseYn;
     }
 
 }
