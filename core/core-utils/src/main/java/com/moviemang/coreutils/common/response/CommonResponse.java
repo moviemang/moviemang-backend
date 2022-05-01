@@ -63,6 +63,14 @@ public class CommonResponse<T> {
                 .errorCode(errorCode.name())
                 .build();
     }
+    public static CommonResponse fail(ErrorCode errorCode, HttpStatus status) {
+        return CommonResponse.builder()
+                .result(Result.FAIL)
+                .status(status)
+                .message(errorCode.getErrorMsg())
+                .errorCode(errorCode.name())
+                .build();
+    }
 
     public enum Result {
         SUCCESS, FAIL

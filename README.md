@@ -11,6 +11,10 @@
 | member-api-server | 8080 |     |
 | playlist-api-server | 8081 |     |
 
+### junit 테스트시 에러 날 경우
+- IntelliJ의 Preferences > Build, Execution, Deployment > Build Tools > Grade 창
+- Run test using -> IntellliJ로 변경
+
 ## 프로젝트 구조
 ```
 moviemang
