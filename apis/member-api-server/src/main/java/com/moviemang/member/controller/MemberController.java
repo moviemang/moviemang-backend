@@ -69,9 +69,9 @@ public class MemberController {
 //    	return memberService.checkMailCertification(certificationDto);
 //    }
 
-    @DeleteMapping(path = "/")
+    @DeleteMapping
     public CommonResponse deleteMember(HttpServletRequest httpServletRequest, DeletedMember deletedMember){
-        System.out.println("[Controller] delete member id : " + deletedMember);
+//        System.out.println("[Controller] delete member id : " + deletedMember);
         authenticationUtil.checkAuthenticationInfo(httpServletRequest, deletedMember);
         return memberService.deleteMember(deletedMember);
     }

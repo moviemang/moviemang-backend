@@ -78,17 +78,21 @@ public class MemberServiceImpl implements MemberService{
 
 	/**
 	 * 회원 탈퇴
-	 * @param memberId
+	 * @param deletedMember
+	 * @return
 	 */
 	@Override
 	public CommonResponse deleteMember(DeletedMember deletedMember) {
 		try{
-			System.out.println("[Service] delete member id :" + deletedMember);
+//			System.out.println("[Service] delete member id :" + deletedMember);
+
 			// member 테이블에서 회원 삭제
 			memberRepository.deleteById(deletedMember.getId());
 
 			// deleted_member 테이블에 탈퇴 회원 추가
-//			deletedMemberRepository.save();
+			deletedMemberRepository.save(com.moviemang.datastore.entity.maria.DeletedMember.builder()
+							.memberEmail(deletedMember.getEmail())
+					.build());
 
 			return CommonResponse.builder()
 					.result(CommonResponse.Result.SUCCESS)
@@ -96,29 +100,12 @@ public class MemberServiceImpl implements MemberService{
 					.build();
 
 		}catch (EmptyResultDataAccessException e){
-			throw new BaseException(ErrorCode.COMMON_ENTITY_NOT_FOUND);
+			return CommonResponse.success(null,ErrorCode.COMMON_ENTITY_NOT_FOUND.getErrorMsg(), HttpStatus.NO_CONTENT);
 
 		}catch (Exception e){
 			throw new BaseException(ErrorCode.COMMON_SYSTEM_ERROR);
 
 		}
-
-		/*
-		// 실패시 - TODO: HTTP STATUS 변경 필요 (nO_CONTENT 204)
-		{
-			"result": "FAIL",
-			"data": null,
-			"message": "존재하지 않는 엔티티입니다.",
-			"error_code": "COMMON_ENTITY_NOT_FOUND"
-		}
-		// 성공시
-		{
-			"result": "SUCCESS",
-			"data": "SUCCESS",
-			"message": null,
-			"error_code": null
-		}
-		 */
 	}
 
 	/**
