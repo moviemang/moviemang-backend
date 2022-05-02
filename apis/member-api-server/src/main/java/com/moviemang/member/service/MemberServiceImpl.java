@@ -3,7 +3,9 @@ package com.moviemang.member.service;
 import com.moviemang.datastore.dto.member.MemberJoinDto;
 import com.moviemang.datastore.entity.maria.MailServiceUser;
 import com.moviemang.datastore.entity.maria.Member;
+import com.moviemang.datastore.repository.maria.DeletedMemberRepository;
 import com.moviemang.datastore.repository.maria.MemberRepository;
+import com.moviemang.member.domain.DeletedMember;
 import com.moviemang.member.encrypt.CommonEncoder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +13,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import org.apache.commons.lang3.StringUtils;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -29,19 +32,23 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 public class MemberServiceImpl implements MemberService{
 
-    private MemberRepository memberRepository;
+	private MemberRepository memberRepository;
     private CommonEncoder commonEncoder;
+	private DeletedMemberRepository deletedMemberRepository;
 	private MailCertificationRepository mailRepo;
 	private MailUtil mailUtil;
 	private MailUserServiceImpl mailUserServiceImpl;
 	@Autowired
 	public MemberServiceImpl(MailUtil mailUtil, MailCertificationRepository mailRepo,
-			 MemberRepository memberRepository,MailUserServiceImpl mailUserServiceImpl,CommonEncoder commonEncoder) {
+
+							 MemberRepository memberRepository, DeletedMemberRepository deletedMemberRepository) {
 		this.mailRepo = mailRepo;
 		this.mailUtil = mailUtil;
 		this.memberRepository = memberRepository;
-		this.commonEncoder = commonEncoder;
-		this.mailUserServiceImpl = mailUserServiceImpl;
+		this.deletedMemberRepository = deletedMemberRepository;
+		this.commonEncoder = new CommonEncoder();
+
+
 	}
 
 	/**
@@ -116,6 +123,38 @@ public class MemberServiceImpl implements MemberService{
 
 		if(duplicatedUser!=0) return CommonResponse.fail(ErrorCode.NICK_NOT_FOUND);
 		else return CommonResponse.success(CommonResponse.Result.SUCCESS);
+	}
+
+	/**
+	 * 회원 탈퇴
+	 * @param deletedMember
+	 * @return
+	 */
+	@Override
+	public CommonResponse deleteMember(DeletedMember deletedMember) {
+		try{
+//			System.out.println("[Service] delete member id :" + deletedMember);
+
+			// member 테이블에서 회원 삭제
+			memberRepository.deleteById(deletedMember.getId());
+
+			// deleted_member 테이블에 탈퇴 회원 추가
+			deletedMemberRepository.save(com.moviemang.datastore.entity.maria.DeletedMember.builder()
+							.memberEmail(deletedMember.getEmail())
+					.build());
+
+			return CommonResponse.builder()
+					.result(CommonResponse.Result.SUCCESS)
+					.message("회원 탈퇴가 완료되었습니다.")
+					.build();
+
+		}catch (EmptyResultDataAccessException e){
+			return CommonResponse.success(null,ErrorCode.COMMON_ENTITY_NOT_FOUND.getErrorMsg(), HttpStatus.NO_CONTENT);
+
+		}catch (Exception e){
+			throw new BaseException(ErrorCode.COMMON_SYSTEM_ERROR);
+
+		}
 	}
 
 	/**

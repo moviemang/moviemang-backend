@@ -22,7 +22,7 @@ management:
   endpoints:
     web:
       cors:
-        allowed-methods: GET,POST
+        allowed-methods: *
       exposure:
         include: '*'
   health:
