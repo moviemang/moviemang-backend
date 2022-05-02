@@ -2,14 +2,17 @@ package com.moviemang.member.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.moviemang.coreutils.common.response.CommonResponse;
-import com.moviemang.datastore.domain.MailCertificationDto;
-import com.moviemang.datastore.entity.maria.Member;
+import com.moviemang.datastore.dto.MailCertificationDto;
+import com.moviemang.datastore.dto.member.MemberJoinDto;
+import com.moviemang.member.domain.DeletedMember;
+
 
 @SuppressWarnings("rawtypes")
 public interface MemberService {
 	CommonResponse checkMailCertification(MailCertificationDto certificationDto);
-    public Member regist(Member member);
+    public CommonResponse regist(MemberJoinDto member);
     public CommonResponse checkEmail(String email);
     public CommonResponse checkNick(String nick);
+    public CommonResponse deleteMember(DeletedMember deletedMember);
     CommonResponse sendCertificationMail(String email) throws JsonProcessingException;
 }

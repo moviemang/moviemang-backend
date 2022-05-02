@@ -1,6 +1,5 @@
 package com.moviemang.security.config;
 
-import com.moviemang.security.filter.AuthenticationFilter;
 import com.moviemang.security.filter.LoginFilter;
 import com.moviemang.security.handler.CustomAccessDeniedHandler;
 import com.moviemang.security.service.UserDetailServiceImpl;
@@ -71,7 +70,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         config.setAllowedOrigins(Arrays.asList("*"));
         config.setAllowedMethods(Arrays.asList("*"));
         config.setAllowedHeaders(Arrays.asList("*"));
-        config.setAllowCredentials(true);
+        config.setAllowCredentials(false);
         config.applyPermitDefaultValues();
 
         source.registerCorsConfiguration("/**", config);

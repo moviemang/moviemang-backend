@@ -2,6 +2,7 @@ package com.moviemang.coreutils.model.vo;
 
 import lombok.*;
 
+@ToString
 @Setter
 @Getter
 @Builder

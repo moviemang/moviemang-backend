@@ -7,8 +7,8 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 
-@ComponentScan(basePackages = "com.moviemang")
 @EnableJpaAuditing
+@ComponentScan(basePackages = "com.moviemang")
 @SpringBootApplication(exclude = SecurityAutoConfiguration.class)
 public class MemberApiServerApplication {
 
