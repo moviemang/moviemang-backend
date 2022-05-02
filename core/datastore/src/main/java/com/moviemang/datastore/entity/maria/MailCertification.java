@@ -1,42 +1,34 @@
 package com.moviemang.datastore.entity.maria;
 
-import java.time.LocalDateTime;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
 @ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-public class MailCertification {
+@Table(name = "mail_certification")
+public class MailCertification{
 
 	@Id
+	@Column(name = "mail_certification_id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long mailCertificationId;
-	
-	@Column(nullable = false, length = 30)
+
+	@Column(name = "member_email", nullable = false, length = 30)
 	private String memberEmail;
 	
-	@Column(nullable = false, length = 10)
+	@Column(name = "mail_certification_msg", nullable = false, length = 10)
 	private String mailCertificationMsg;
-	
+
 	@CreatedDate
+	@Column(name = "reg_date")
 	private LocalDateTime regDate;
-	
+
 	@Builder
 	public MailCertification(Long mailCertificationId, String memberEmail, String mailCertificationMsg,
 			LocalDateTime regDate, String mailCertificationSuccess) {

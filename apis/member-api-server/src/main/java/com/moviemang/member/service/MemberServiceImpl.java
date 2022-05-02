@@ -1,138 +1,205 @@
 package com.moviemang.member.service;
 
-import com.moviemang.datastore.entity.maria.Member;
-import com.moviemang.datastore.repository.maria.MemberRepository;
-import com.moviemang.member.encrypt.CommonEncoder;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import org.apache.commons.lang3.StringUtils;
-
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
-
-import java.util.Optional;
-
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.moviemang.coreutils.common.exception.BaseException;
+import com.moviemang.coreutils.common.exception.InvalidParamException;
 import com.moviemang.coreutils.common.response.CommonResponse;
 import com.moviemang.coreutils.common.response.ErrorCode;
-import com.moviemang.datastore.domain.MailCertificationDto;
+import com.moviemang.datastore.dto.MailCertificationDto;
+import com.moviemang.datastore.dto.member.MemberJoinDto;
 import com.moviemang.datastore.entity.maria.MailCertification;
+import com.moviemang.datastore.entity.maria.MailServiceUser;
+import com.moviemang.datastore.entity.maria.Member;
+import com.moviemang.datastore.repository.maria.DeletedMemberRepository;
 import com.moviemang.datastore.repository.maria.MailCertificationRepository;
+import com.moviemang.datastore.repository.maria.MemberRepository;
+import com.moviemang.member.domain.DeletedMember;
+import com.moviemang.member.encrypt.CommonEncoder;
 import com.moviemang.member.util.CreateCertificationUtil;
 import com.moviemang.member.util.MailUtil;
-
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+import java.util.Map;
 
 @Service
 @Slf4j
+@Transactional(rollbackFor=Exception.class)
 public class MemberServiceImpl implements MemberService{
 
-    private MemberRepository memberRepository;
+	private MemberRepository memberRepository;
     private CommonEncoder commonEncoder;
+	private DeletedMemberRepository deletedMemberRepository;
 	private MailCertificationRepository mailRepo;
 	private MailUtil mailUtil;
+	private MailUserServiceImpl mailUserServiceImpl;
+	private ObjectMapper om;
+
 	@Autowired
-	public MemberServiceImpl(MailUtil mailUtil, MailCertificationRepository mailRepo,MemberRepository memberRepository) {
+	public MemberServiceImpl(MailUtil mailUtil, MailCertificationRepository mailRepo,
+	 MemberRepository memberRepository, DeletedMemberRepository deletedMemberRepository, MailUserServiceImpl mailUserServiceImpl) {
 		this.mailRepo = mailRepo;
 		this.mailUtil = mailUtil;
 		this.memberRepository = memberRepository;
+		this.deletedMemberRepository = deletedMemberRepository;
 		this.commonEncoder = new CommonEncoder();
-
+		this.om = new ObjectMapper();
+		this.mailUserServiceImpl = mailUserServiceImpl;
 	}
 
+	/**
+	 * 회원가입 메소드
+	 * @author hwang.kh
+	 * @param memberJoinDto
+	 * @return {@link CommonResponse}
+	 */
     @Override
-    public Member regist(Member member) {
-        log.info("");
+    public CommonResponse regist(MemberJoinDto memberJoinDto) {
+
         // 비밀번호 암호화
-        member.setMemberPassword(commonEncoder.encode(member.getMemberPassword()));
+		String encodePassword = commonEncoder.encode(memberJoinDto.getMemberPassword());
+		// 멤버 테이블에 넣을 정보 세팅
+		Member joinUser =Member.builder()
+				.memberEmail(memberJoinDto.getMemberEmail())
+				.memberName(memberJoinDto.getMemberName())
+				.memberPassword(encodePassword)
+				.build();
+		try {
+			Member resultMember = memberRepository.save(joinUser);
+			log.info("resultMember  : "+resultMember.toString());
 
-        // regist 처리
-        memberRepository.save(member);
-        return null;
+			// if else로 돌려주는게 아니라 Exception 클래스에서 하는게 맞지 않을까? 논의 필요
+			if(resultMember==null){
+				return CommonResponse.fail(ErrorCode.COMMON_ILLEGAL_STATUS);
+			}
+			if(!memberJoinDto.getMailServiceUseYn().equalsIgnoreCase("")){
+				MailServiceUser mailServiceUser = MailServiceUser.builder()
+						.memberId(resultMember.getMemberId())
+						.memberEmail(resultMember.getMemberEmail())
+						.contentType(memberJoinDto.getMailServiceUseYn())
+						.build();
+				log.info("mailServiceUser  : "+mailServiceUser.toString());
+				MailServiceUser result = mailUserServiceImpl.memberJoin(mailServiceUser);
+
+				log.info("Result MailServiceUser  : "+result.toString());
+			}
+		}catch (Exception e){
+			e.printStackTrace();
+			throw new BaseException(ErrorCode.COMMON_SYSTEM_ERROR);
+		}
+
+		return CommonResponse.builder()
+				.result(CommonResponse.Result.SUCCESS)
+				.status(HttpStatus.CREATED)
+				.build();
     }
-
+	/**
+	 * 이메일 중복체크 메소드
+	 * @author hwang.kh
+	 * @param email
+	 * @return {@link CommonResponse}
+	 */
     @Override
     public CommonResponse checkEmail(String email) {
         int duplicatedUser = memberRepository.countMemberByMemberEmail(email);
 
-		if(!(duplicatedUser>0)) return CommonResponse.success(CommonResponse.Result.FAIL);
+		if(duplicatedUser!=0) return CommonResponse.fail(ErrorCode.MAIL_NOT_FOUND);
 		else return CommonResponse.success(CommonResponse.Result.SUCCESS);
-
     }
 
+	/**
+	 * 닉네임 중복체크 메소드
+	 * @author hwang.kh
+	 * @param nick
+	 * @return {@link CommonResponse}
+	 */
 	@Override
 	public CommonResponse checkNick(String nick) {
 		int duplicatedUser = memberRepository.countMemberByMemberName(nick);
 
-		if(!(duplicatedUser>0)) return CommonResponse.success(CommonResponse.Result.FAIL);
+		if(duplicatedUser!=0) return CommonResponse.fail(ErrorCode.NICK_NOT_FOUND);
 		else return CommonResponse.success(CommonResponse.Result.SUCCESS);
 	}
 
 	/**
-	 * 이메일 중복체크 클릭 시 인증메일 발송하는 메소드
-	 * @author kang.dj
-	 * @param memberEmail
-	 * @return {@link Boolean}
+	 * 회원 탈퇴
+	 * @param deletedMember
+	 * @return
 	 */
-	public boolean sendCertificationMail(String memberEmail) {
-		String certificationStr = CreateCertificationUtil.create(false, 6);	// 인증번호 생성
-		LocalDateTime now = LocalDateTime.now();	// 메일 전송 시간
+	@Override
+	public CommonResponse deleteMember(DeletedMember deletedMember) {
+		try{
+//			System.out.println("[Service] delete member id :" + deletedMember);
 
-		try {
-			// 이메일 인증정보 세팅
-			MailCertification certificationInfo = MailCertification.builder()
-					.memberEmail(memberEmail)
-					.mailCertificationMsg(certificationStr)
-					.regDate(now)
+			// member 테이블에서 회원 삭제
+			memberRepository.deleteById(deletedMember.getId());
+
+			// deleted_member 테이블에 탈퇴 회원 추가
+			deletedMemberRepository.save(com.moviemang.datastore.entity.maria.DeletedMember.builder()
+							.memberEmail(deletedMember.getEmail())
+					.build());
+
+			return CommonResponse.builder()
+					.result(CommonResponse.Result.SUCCESS)
+					.message("회원 탈퇴가 완료되었습니다.")
 					.build();
 
-			// 회원 이메일 및 인증번호와 인증 메일 전송 시간 저장
-			mailRepo.save(certificationInfo);
-		} catch (Exception e) {
-			log.error("이메일 인증 데이터 세팅 중 오류 발생 : {}", e.getMessage());
+		}catch (EmptyResultDataAccessException e){
+			return CommonResponse.success(null,ErrorCode.COMMON_ENTITY_NOT_FOUND.getErrorMsg(), HttpStatus.NO_CONTENT);
+
+		}catch (Exception e){
 			throw new BaseException(ErrorCode.COMMON_SYSTEM_ERROR);
-		}
 
-		boolean isSuccess = mailUtil.certificationMailSend(certificationStr, memberEmail);
-
-		if(!isSuccess) {
-			return false;
 		}
-		return true;
 	}
 
-	/*
-	 * 이메일 인증 버튼 클릭 시 인증번호 및 유효시간 체크
-	 * @param memberEmail
-	 * @param mailCertificationMsg
-	 * @param clickTime
-	 * @return {@link CommonResponse}
-	 */
+	public CommonResponse sendCertificationMail(String memberEmail) throws JsonProcessingException {
+		String certificationStr = CreateCertificationUtil.create(false, 6);
+		if(StringUtils.isEmpty(memberEmail)){
+			throw new InvalidParamException();
+		}
+		boolean isSuccess = false;
+		Map<String, String> map = om.readValue(memberEmail, Map.class);
+		try {
+			MailCertification certificationInfo = MailCertification.builder()
+					.memberEmail(map.get("member_email"))
+					.mailCertificationMsg(certificationStr)
+					.regDate(LocalDateTime.now())
+					.build();
+			mailRepo.save(certificationInfo);
+		} catch (Exception e) {
+			log.error("email param setting error : {}", e.getMessage());
+			throw new BaseException(ErrorCode.COMMON_INVALID_PARAMETER);
+		}
+		isSuccess = mailUtil.certificationMailSend(certificationStr, map.get("member_email"));
+		if(!isSuccess) {
+			return CommonResponse.fail(ErrorCode.MAIL_SYSTEM_ERROR);
+		}
+		return CommonResponse.success(null, "메일 발송 성공", HttpStatus.CREATED);
+	}
+
 	@SuppressWarnings("static-access")
 	public CommonResponse checkMailCertification(MailCertificationDto certificationDto) {
-		// String => LocalDate 포맷터
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-		// 해당 이메일로 등록된 데이터 중 가장 최신 row 가져옴
 		MailCertification certificationInfo = mailRepo.findTop1ByMemberEmailOrderByRegDateDesc(certificationDto.getMemberEmail());
-
-		LocalDateTime mailSendTime = certificationInfo.getRegDate(); // 메일 보낸 시간
-		LocalDateTime formattedDate = LocalDateTime.parse(certificationDto.getClickedTime(), formatter); // 클릭한 시간 포맷팅 String => LocalDateTime
-		LocalDateTime minus5Time = formattedDate.minusMinutes(5); // 클릭한 시간 - 5분
+		LocalDateTime mailSendTime = certificationInfo.getRegDate();
+		LocalDateTime minus5Time = certificationDto.getClickedTime().minusMinutes(5);
 
 		if(minus5Time.isAfter(mailSendTime)) {
-			// 인증시간 초과
 			return CommonResponse.fail(ErrorCode.CERTIFICATION_TIMED_OUT);
 		}
 		else {
 			if(StringUtils.equals(certificationInfo.getMailCertificationMsg(), certificationDto.getMailCertificationMsg())) {
-				// 인증번호 일치
 				return CommonResponse.success(null, "인증 성공", HttpStatus.CREATED);
 			}
 			else {
-				// 인증번호 불일치
 				return CommonResponse.fail(ErrorCode.CERTIFICATION_NOT_EQUAL);
 			}
 		}
