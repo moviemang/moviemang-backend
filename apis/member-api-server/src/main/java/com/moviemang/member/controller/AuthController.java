@@ -3,7 +3,7 @@ package com.moviemang.member.controller;
 
 import com.moviemang.coreutils.common.response.CommonResponse;
 import com.moviemang.coreutils.common.response.ErrorCode;
-import com.moviemang.member.domain.RefreshToken;
+import com.moviemang.member.dto.RefreshToken;
 import com.moviemang.security.domain.TokenInfo;
 import com.moviemang.security.service.AuthenticationService;
 import com.moviemang.security.service.UserDetailServiceImpl;
@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 @RestController
 public class AuthController {

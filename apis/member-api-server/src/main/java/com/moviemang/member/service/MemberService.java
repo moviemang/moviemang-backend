@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.moviemang.coreutils.common.response.CommonResponse;
 import com.moviemang.datastore.dto.MailCertificationDto;
 import com.moviemang.datastore.dto.member.MemberJoinDto;
-import com.moviemang.member.domain.DeletedMember;
+import com.moviemang.member.dto.DeletedMember;
 
 
 @SuppressWarnings("rawtypes")

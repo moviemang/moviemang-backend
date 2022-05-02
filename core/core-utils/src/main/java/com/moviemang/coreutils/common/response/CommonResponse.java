@@ -34,6 +34,13 @@ public class CommonResponse<T> {
                 .message(message)
                 .build();
     }
+
+    public static <T> CommonResponse<T> success(ErrorCode errorCode) {
+        return (CommonResponse<T>) CommonResponse.builder()
+                .result(Result.SUCCESS)
+                .message(errorCode.getErrorMsg())
+                .build();
+    }
     @SuppressWarnings("unchecked")
     public static <T> CommonResponse<T> success(T data, String message, HttpStatus status) {
         return (CommonResponse<T>) CommonResponse.builder()
