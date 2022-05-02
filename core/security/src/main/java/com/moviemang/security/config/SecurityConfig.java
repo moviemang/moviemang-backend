@@ -1,6 +1,5 @@
 package com.moviemang.security.config;
 
-import com.moviemang.security.filter.AuthenticationFilter;
 import com.moviemang.security.filter.LoginFilter;
 import com.moviemang.security.handler.CustomAccessDeniedHandler;
 import com.moviemang.security.service.UserDetailServiceImpl;
