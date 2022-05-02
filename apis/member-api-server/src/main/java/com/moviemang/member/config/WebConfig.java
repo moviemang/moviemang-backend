@@ -31,6 +31,6 @@ public class WebConfig implements WebMvcConfigurer {
         AuthorityCheckInterceptor authorityCheckInterceptor = new AuthorityCheckInterceptor(authenticationService);
         authorityCheckInterceptor.setAuthenticationService(authenticationService);
         registry.addInterceptor(authorityCheckInterceptor)
-                .excludePathPatterns("/member/join");
+                .excludePathPatterns("/member/join","/token/refresh");
     }
 }

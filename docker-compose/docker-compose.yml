@@ -17,7 +17,7 @@ services:
       - --collation-server=utf8mb4_unicode_ci
       - --lower_case_table_names=1
     volumes:
-      - ./maria/data:/var/lib/mysql
+      - ../../maria/data:/var/lib/mysql
   moviemang-mongodb:
     image: mongo:latest
     container_name: mongodb
@@ -25,7 +25,7 @@ services:
     ports:
       - 27017:27017
     volumes:
-      - ./mongo:/data/db
+      - ../../mongo:/data/db
     environment:
       - MONGO_INITDB_ROOT_USERNAME=root
       - MONGO_INITDB_ROOT_PASSWORD=root-pass
