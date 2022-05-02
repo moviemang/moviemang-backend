@@ -1,5 +1,7 @@
 package com.moviemang.member.service;
 
+import com.moviemang.datastore.dto.member.MemberJoinDto;
+import com.moviemang.datastore.entity.maria.MailServiceUser;
 import com.moviemang.datastore.entity.maria.Member;
 import com.moviemang.datastore.repository.maria.DeletedMemberRepository;
 import com.moviemang.datastore.repository.maria.MemberRepository;
@@ -15,19 +17,17 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
 import com.moviemang.coreutils.common.exception.BaseException;
 import com.moviemang.coreutils.common.response.CommonResponse;
 import com.moviemang.coreutils.common.response.ErrorCode;
-import com.moviemang.datastore.domain.MailCertificationDto;
+import com.moviemang.datastore.dto.MailCertificationDto;
 import com.moviemang.datastore.entity.maria.MailCertification;
 import com.moviemang.datastore.repository.maria.MailCertificationRepository;
 import com.moviemang.member.util.CreateCertificationUtil;
 import com.moviemang.member.util.MailUtil;
+import org.springframework.transaction.annotation.Transactional;
 
-import lombok.extern.slf4j.Slf4j;
-
+@Transactional(rollbackFor=Exception.class)
 @Service
 @Slf4j
 public class MemberServiceImpl implements MemberService{
@@ -37,8 +37,10 @@ public class MemberServiceImpl implements MemberService{
 	private DeletedMemberRepository deletedMemberRepository;
 	private MailCertificationRepository mailRepo;
 	private MailUtil mailUtil;
+	private MailUserServiceImpl mailUserServiceImpl;
 	@Autowired
 	public MemberServiceImpl(MailUtil mailUtil, MailCertificationRepository mailRepo,
+
 							 MemberRepository memberRepository, DeletedMemberRepository deletedMemberRepository) {
 		this.mailRepo = mailRepo;
 		this.mailUtil = mailUtil;
@@ -46,33 +48,80 @@ public class MemberServiceImpl implements MemberService{
 		this.deletedMemberRepository = deletedMemberRepository;
 		this.commonEncoder = new CommonEncoder();
 
+
 	}
 
+	/**
+	 * 회원가입 메소드
+	 * @author hwang.kh
+	 * @param memberJoinDto
+	 * @return {@link CommonResponse}
+	 */
     @Override
-    public Member regist(Member member) {
-        log.info("");
+    public CommonResponse regist(MemberJoinDto memberJoinDto) {
+
         // 비밀번호 암호화
-        member.setMemberPassword(commonEncoder.encode(member.getMemberPassword()));
+		String encodePassword = commonEncoder.encode(memberJoinDto.getMemberPassword());
+		// 멤버 테이블에 넣을 정보 세팅
+		Member joinUser =Member.builder()
+				.memberEmail(memberJoinDto.getMemberEmail())
+				.memberName(memberJoinDto.getMemberName())
+				.memberPassword(encodePassword)
+				.build();
+		try {
+			Member resultMember = memberRepository.save(joinUser);
+			log.info("resultMember  : "+resultMember.toString());
 
-        // regist 처리
-        memberRepository.save(member);
-        return null;
+			// if else로 돌려주는게 아니라 Exception 클래스에서 하는게 맞지 않을까? 논의 필요
+			if(resultMember==null){
+				return CommonResponse.fail(ErrorCode.COMMON_ILLEGAL_STATUS);
+			}
+			if(!memberJoinDto.getMailServiceUseYn().equalsIgnoreCase("")){
+				MailServiceUser mailServiceUser = MailServiceUser.builder()
+						.memberId(resultMember.getMemberId())
+						.memberEmail(resultMember.getMemberEmail())
+						.contentType(memberJoinDto.getMailServiceUseYn())
+						.build();
+				log.info("mailServiceUser  : "+mailServiceUser.toString());
+				MailServiceUser result = mailUserServiceImpl.memberJoin(mailServiceUser);
+
+				log.info("Result MailServiceUser  : "+result.toString());
+			}
+		}catch (Exception e){
+			e.printStackTrace();
+			throw new BaseException(ErrorCode.COMMON_SYSTEM_ERROR);
+		}
+
+		return CommonResponse.builder()
+				.result(CommonResponse.Result.SUCCESS)
+				.status(HttpStatus.CREATED)
+				.build();
     }
-
+	/**
+	 * 이메일 중복체크 메소드
+	 * @author hwang.kh
+	 * @param email
+	 * @return {@link CommonResponse}
+	 */
     @Override
     public CommonResponse checkEmail(String email) {
         int duplicatedUser = memberRepository.countMemberByMemberEmail(email);
 
-		if(!(duplicatedUser>0)) return CommonResponse.success(CommonResponse.Result.FAIL);
+		if(duplicatedUser!=0) return CommonResponse.fail(ErrorCode.MAIL_NOT_FOUND);
 		else return CommonResponse.success(CommonResponse.Result.SUCCESS);
-
     }
 
+	/**
+	 * 닉네임 중복체크 메소드
+	 * @author hwang.kh
+	 * @param nick
+	 * @return {@link CommonResponse}
+	 */
 	@Override
 	public CommonResponse checkNick(String nick) {
 		int duplicatedUser = memberRepository.countMemberByMemberName(nick);
 
-		if(!(duplicatedUser>0)) return CommonResponse.success(CommonResponse.Result.FAIL);
+		if(duplicatedUser!=0) return CommonResponse.fail(ErrorCode.NICK_NOT_FOUND);
 		else return CommonResponse.success(CommonResponse.Result.SUCCESS);
 	}
 
