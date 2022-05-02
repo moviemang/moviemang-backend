@@ -18,12 +18,10 @@ public abstract class BaseTimeEntity {
     @CreatedDate
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Column(name = "reg_Date")
-    @JsonProperty("mod_date")
     private LocalDateTime regDate; // 회원 등록일
 
     @LastModifiedDate
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @JsonProperty("mod_date")
     @Column(name = "mod_date")
     private LocalDateTime modDate; // 회원 수정일
 

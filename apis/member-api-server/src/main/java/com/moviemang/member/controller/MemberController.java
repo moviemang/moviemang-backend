@@ -1,11 +1,10 @@
 package com.moviemang.member.controller;
 
 import com.moviemang.coreutils.common.response.CommonResponse;
-import com.moviemang.coreutils.common.response.ErrorCode;
+import com.moviemang.datastore.dto.member.MemberJoinDto;
 import com.moviemang.datastore.entity.maria.Member;
 import com.moviemang.member.service.MemberService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.validation.Errors;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -16,15 +15,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.moviemang.coreutils.common.response.CommonResponse;
-import com.moviemang.datastore.domain.MailCertificationDto;
-import com.moviemang.member.service.MemberService;
+import com.moviemang.datastore.dto.MailCertificationDto;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @CrossOrigin(origins = "*")
-@RequestMapping(path = "/member", consumes = "application/json")
+@RequestMapping(path = "/member")
 @RestController
 public class MemberController {
 
@@ -36,26 +33,20 @@ public class MemberController {
     }
 
     @PostMapping(path = "/join")
-    public CommonResponse postRegist(@ModelAttribute @Validated Member member, Errors errors){
+    public CommonResponse postRegist(@RequestBody @Validated MemberJoinDto memberJoinDto){
 
-
-        Member newbie = memberService.regist(member);
-        if(newbie!=null){
-            return CommonResponse.builder()
-                    .result(CommonResponse.Result.SUCCESS)
-                    .status(HttpStatus.CREATED)
-                    .build();
-        }else{
-
-            return CommonResponse.fail(ErrorCode.COMMON_ILLEGAL_STATUS);
-        }
+        return memberService.regist(memberJoinDto);
     }
+    // Post로 Body에 넣어서  보내기
     @GetMapping(path = "/emailcheck/{email}")
-    public CommonResponse getEmailCheck(@PathVariable(value = "") String email){
+    public CommonResponse getEmailCheck(@PathVariable(value = "email") String email){
+        log.info("들어옴 ㅋㅋㅋㅋ");
         return memberService.checkEmail(email);
     }
+    // Post로 Body에 넣어서  보내기
     @GetMapping(path = "/nickcheck/{nick}")
-    public CommonResponse getNickCheck(@PathVariable(value = "") String nick){
+    public CommonResponse getNickCheck(@PathVariable String nick)
+    {
         return memberService.checkNick(nick);
     }
 
