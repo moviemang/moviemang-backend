@@ -1,5 +1,9 @@
 package com.moviemang.playlist;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.moviemang.coreutils.model.vo.HttpClientRequest;
+import com.moviemang.coreutils.utils.httpclient.HttpClient;
+import com.moviemang.datastore.domain.PlayListOrderByLikeDto;
 import com.moviemang.datastore.repository.mongo.like.LikeRepository;
 import com.moviemang.datastore.repository.mongo.playList.PlaylistRepository;
 import com.moviemang.datastore.repository.mongo.tag.TagRepository;
@@ -10,6 +14,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.LookupOperation;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 @SpringBootTest
@@ -23,6 +32,9 @@ class PlaylistApiServerApplicationTests {
 
     @Autowired
     LikeRepository likeRepository;
+
+    @Autowired
+    ObjectMapper om;
 
 
 //    @DisplayName("태그 넣기")
@@ -63,19 +75,54 @@ class PlaylistApiServerApplicationTests {
 //        playlistRepository.save(playlist);
 //    }
 
+    // 기본 URL = https://api.themoviedb.org/3/
+    // 대상 URL = /movie/{movie_id}/images
+    // API키 = cbfa45007409cc068286bfeafd12a530
+    // IMG_BASE_URL = https://image.tmdb.org/t/p/w500
     @Test
     @DisplayName("LEFT OUTER JOIN 테스트")
     void aggresionTest(){
+        Map<String, Object> param = new HashMap<>();
+        param.put("api_key", "cbfa45007409cc068286bfeafd12a530");
+        HttpClientRequest request = new HttpClientRequest();
+
         LookupOperation lookupOperation = LookupOperation.newLookup()
                 .from("like")
                 .localField("_id")
                 .foreignField("targetId")
                 .as("likeList");
         Aggregation aggregation = Aggregation.newAggregation(lookupOperation);
-        playlistRepository.playListLookupLike(aggregation, "playList")
+        List<PlayListOrderByLikeDto> list = playlistRepository.playListLookupLike(aggregation, "playList")
                 .getMappedResults()
                 .stream()
-                .forEach(x -> log.info("테스트  : {}", x.toString()));
+                .peek(playlist -> {
+                    playlist.setLikeCount(playlist.getLikeList().size());
+                })
+                .map( notImagPlayList -> {
+                    List<Integer> movieIds = notImagPlayList.getMovieIds();
+                    for(int movieId : movieIds){
+                        request.setUrl("https://api.themoviedb.org/3/" + "/movie/"+ movieId  +"/images");
+                        request.setData(param);
+                        try {
+                            Map<String, Object> reseponse = om.readValue(HttpClient.get(request), HashMap.class);
+                            List<Map<String, Object>> posterData = (List<Map<String, Object>>) reseponse.get("posters");
+                            notImagPlayList.getRepresentativeImagePath().add(posterData.get(0).get("file_path").toString());
+                            return notImagPlayList;
+                        } catch (Exception e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                    return null;
+                })
+                .collect(Collectors.toList());
+
+        for(PlayListOrderByLikeDto playlist : list){
+            log.info("플레이리스트 : {}", playlist.toString());
+        }
     }
+
+
+
+
 
 }
