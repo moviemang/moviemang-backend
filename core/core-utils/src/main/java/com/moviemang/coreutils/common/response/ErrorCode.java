@@ -24,6 +24,7 @@ public enum ErrorCode {
     AUTH_INVALID_JWT("유효하지 않은 토큰입니다."),
     AUTH_EXPIRED_JWT("토큰 유효시간이 지났습니다."),
     AUTH_REFRESH_TOKEN_INVALID("리프레시 토큰이 유효하지 않습니다."),
+    AUTH_LOGIN_FAIL("아이디 또는 비밀번호를 잘못 입력했습니다. 입력하신 내용을 다시 확인해주세요."),
 
 	// Mail Exception
     MAIL_NOT_FOUND("이미 사용중인 이메일입니다"),

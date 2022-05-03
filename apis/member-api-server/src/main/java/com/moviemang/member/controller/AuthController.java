@@ -8,6 +8,7 @@ import com.moviemang.security.domain.TokenInfo;
 import com.moviemang.security.service.AuthenticationService;
 import com.moviemang.security.service.UserDetailServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -33,7 +34,7 @@ public class AuthController {
             tokenInfo = authenticationService.refreshAccessToken(request, refreshToken.getRefreshToken());
 
         } catch (Exception e) {
-            return CommonResponse.fail(ErrorCode.AUTH_REFRESH_TOKEN_INVALID);
+            return CommonResponse.fail(ErrorCode.AUTH_REFRESH_TOKEN_INVALID, HttpStatus.UNAUTHORIZED);
         }
 
         return CommonResponse.success(tokenInfo);
