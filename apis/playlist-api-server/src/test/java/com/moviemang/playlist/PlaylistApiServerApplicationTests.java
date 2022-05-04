@@ -1,6 +1,8 @@
 package com.moviemang.playlist;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.moviemang.coreutils.common.exception.MovieApiException;
+import com.moviemang.coreutils.common.response.ErrorCode;
 import com.moviemang.coreutils.model.vo.HttpClientRequest;
 import com.moviemang.coreutils.utils.httpclient.HttpClient;
 import com.moviemang.datastore.domain.PlayListOrderByLikeDto;
@@ -8,6 +10,7 @@ import com.moviemang.datastore.repository.mongo.like.LikeRepository;
 import com.moviemang.datastore.repository.mongo.playList.PlaylistRepository;
 import com.moviemang.datastore.repository.mongo.tag.TagRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -91,11 +94,10 @@ class PlaylistApiServerApplicationTests {
 
         // 좋아요 테이블에서 전날 기준으로 필터
         // targetId로 groupBy하고 Count
-        // 그리고 PlayList 테이블과 조인
-
+        // 그리고 해당 targetId로 플레이리스트 테이블에서 조회
         Aggregation likeAggregation = Aggregation.newAggregation(
                 Aggregation.project("targetId", "regDate", "likeType"),
-                Aggregation.match(Criteria.where("regDate").gte(LocalDate.now().minusDays(2)).and("likeType").is("M")),
+                Aggregation.match(Criteria.where("regDate").gte(LocalDate.now().minusDays(2)).and("likeType").is("D")),
                 Aggregation.group("targetId").count().as("likeCount")
         );
 
@@ -113,8 +115,14 @@ class PlaylistApiServerApplicationTests {
                         request.setUrl(BASE_URL + "/movie/"+ movieId  +"/images");
                         request.setData(param);
                         try {
-                            Map<String, Object> reseponse = om.readValue(HttpClient.get(request), HashMap.class);
-                            List<Map<String, Object>> posterData = (List<Map<String, Object>>) reseponse.get("posters");
+                            Map<String, Object> response = om.readValue(HttpClient.get(request), HashMap.class);
+                            if(response.get("status_code") != null){
+                                if(StringUtils.equals(response.get("status_code").toString(), "7") ){
+                                    throw new MovieApiException(response.get("status_massage").toString(), ErrorCode.INVALID_API_KEY);
+                                }
+                                throw  new MovieApiException(response.get("status_message").toString(), ErrorCode.RESOURCE_NOT_FOUND);
+                            }
+                            List<Map<String, Object>> posterData = (List<Map<String, Object>>) response.get("posters");
                             imgPathList.add(IMG_BASE_URL + posterData.get(0).get("file_path").toString());
                         } catch (Exception e) {
                             throw new RuntimeException(e);
