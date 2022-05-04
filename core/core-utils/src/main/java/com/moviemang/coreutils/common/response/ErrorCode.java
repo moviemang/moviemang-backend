@@ -28,8 +28,6 @@ public enum ErrorCode {
     CERTIFICATION_NOT_EQUAL("인증 번호가 일치하지 않습니다."),
 
     /* 영화 API 관련 Exception */
-    RESOURCE_NOT_FOUND("해당 영화에 대한 정보가 존재하지 않습니다."),
-    API_REQUEST_FAILED("API요청 중 오류가 발생하였습니다."),
     INVALID_API_KEY("API키가 유효하지 않습니다.");
 
     private final String errorMsg;
