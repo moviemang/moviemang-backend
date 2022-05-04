@@ -13,8 +13,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
-import org.springframework.data.mongodb.core.aggregation.LookupOperation;
+import org.springframework.data.mongodb.core.query.Criteria;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,9 +35,13 @@ class PlaylistApiServerApplicationTests {
     @Autowired
     LikeRepository likeRepository;
 
+    String API_KEY = "cbfa45007409cc068286bfeafd12a530";
+    String BASE_URL = "https://api.themoviedb.org/3/";
+
+    String IMG_BASE_URL = "https://image.tmdb.org/t/p/w500";
+
     @Autowired
     ObjectMapper om;
-
 
 //    @DisplayName("태그 넣기")
 //    @Test
@@ -75,48 +81,51 @@ class PlaylistApiServerApplicationTests {
 //        playlistRepository.save(playlist);
 //    }
 
-    // 기본 URL = https://api.themoviedb.org/3/
-    // 대상 URL = /movie/{movie_id}/images
-    // API키 = cbfa45007409cc068286bfeafd12a530
     // IMG_BASE_URL = https://image.tmdb.org/t/p/w500
     @Test
-    @DisplayName("LEFT OUTER JOIN 테스트")
+    @DisplayName("좋아요 순 플레이리스트 조회 API테스트")
     void aggresionTest(){
         Map<String, Object> param = new HashMap<>();
-        param.put("api_key", "cbfa45007409cc068286bfeafd12a530");
+        param.put("api_key", API_KEY);
         HttpClientRequest request = new HttpClientRequest();
 
-        LookupOperation lookupOperation = LookupOperation.newLookup()
-                .from("like")
-                .localField("_id")
-                .foreignField("targetId")
-                .as("likeList");
-        Aggregation aggregation = Aggregation.newAggregation(lookupOperation);
-        List<PlayListOrderByLikeDto> list = playlistRepository.playListLookupLike(aggregation, "playList")
+        // 좋아요 테이블에서 전날 기준으로 필터
+        // targetId로 groupBy하고 Count
+        // 그리고 PlayList 테이블과 조인
+
+        Aggregation likeAggregation = Aggregation.newAggregation(
+                Aggregation.project("targetId", "regDate", "likeType"),
+                Aggregation.match(Criteria.where("regDate").gte(LocalDate.now().minusDays(2)).and("likeType").is("M")),
+                Aggregation.group("targetId").count().as("likeCount")
+        );
+
+        List<PlayListOrderByLikeDto> filterByTypeAndGroupByTargetId = likeRepository.filterByTypeAndGroupByTargetId(likeAggregation, "like")
                 .getMappedResults()
                 .stream()
-                .peek(playlist -> {
-                    playlist.setLikeCount(playlist.getLikeList().size());
-                })
-                .map( notImagPlayList -> {
-                    List<Integer> movieIds = notImagPlayList.getMovieIds();
+                .sorted((o1, o2) -> Integer.compare(o2.getLikeCount(), o1.getLikeCount()))
+                .limit(4)
+                .map( likeObj -> {
+                    PlayListOrderByLikeDto playListOrderByLikeDto = playlistRepository.findPlayListDtoBy_id(likeObj.get_id());
+                    playListOrderByLikeDto.setLikeCount(likeObj.getLikeCount());
+                    List<String> imgPathList = new ArrayList<>();
+                    List<Integer> movieIds = playListOrderByLikeDto.getMovieIds();
                     for(int movieId : movieIds){
-                        request.setUrl("https://api.themoviedb.org/3/" + "/movie/"+ movieId  +"/images");
+                        request.setUrl(BASE_URL + "/movie/"+ movieId  +"/images");
                         request.setData(param);
                         try {
                             Map<String, Object> reseponse = om.readValue(HttpClient.get(request), HashMap.class);
                             List<Map<String, Object>> posterData = (List<Map<String, Object>>) reseponse.get("posters");
-                            notImagPlayList.getRepresentativeImagePath().add(posterData.get(0).get("file_path").toString());
-                            return notImagPlayList;
+                            imgPathList.add(IMG_BASE_URL + posterData.get(0).get("file_path").toString());
                         } catch (Exception e) {
                             throw new RuntimeException(e);
                         }
                     }
-                    return null;
+                    playListOrderByLikeDto.setRepresentativeImagePath(imgPathList);
+                    return playListOrderByLikeDto;
                 })
-                .collect(Collectors.toList());
+                .collect(Collectors.toList());;
 
-        for(PlayListOrderByLikeDto playlist : list){
+        for(PlayListOrderByLikeDto playlist : filterByTypeAndGroupByTargetId){
             log.info("플레이리스트 : {}", playlist.toString());
         }
     }
