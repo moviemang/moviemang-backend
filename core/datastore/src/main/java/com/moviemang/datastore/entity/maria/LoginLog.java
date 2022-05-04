@@ -1,14 +1,13 @@
 package com.moviemang.datastore.entity.maria;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.format.annotation.DateTimeFormat;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 
-import javax.persistence.*;
-import java.time.LocalDateTime;
 
 @Entity
-public class LoginLog {
+public class LoginLog extends BaseTimeEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long seq;
@@ -16,10 +15,6 @@ public class LoginLog {
     private String ip;
     private String device;
 
-    @CreatedDate
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @Column(name = "reg_date")
-    @JsonProperty("reg_date")
-    private LocalDateTime regDate; // 회원 등록일
+
 
 }
