@@ -11,6 +11,10 @@ public enum ErrorCode {
     COMMON_ENTITY_NOT_FOUND("존재하지 않는 엔티티입니다."),
     COMMON_ILLEGAL_STATUS("잘못된 상태값입니다."),
 
+    // Join CHECK Exception
+    NICK_NOT_FOUND("이미 사용중인 닉네임입니다"),
+
+    // Auth Exception
     USER_NOT_FOUND("회원을 찾을수 없습니다."),
 
     AUTH_INVALID_SIGNATURE_JWT("토큰이 유효하지 않습니다."),
@@ -20,6 +24,7 @@ public enum ErrorCode {
     AUTH_INVALID_JWT("유효하지 않은 토큰입니다."),
     AUTH_EXPIRED_JWT("토큰 유효시간이 지났습니다."),
     AUTH_REFRESH_TOKEN_INVALID("리프레시 토큰이 유효하지 않습니다."),
+    AUTH_LOGIN_FAIL("아이디 또는 비밀번호를 잘못 입력했습니다. 입력하신 내용을 다시 확인해주세요."),
 
 	// Mail Exception
     MAIL_NOT_FOUND("이미 사용중인 이메일입니다"),

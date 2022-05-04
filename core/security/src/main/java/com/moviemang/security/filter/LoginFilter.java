@@ -1,10 +1,15 @@
 package com.moviemang.security.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.moviemang.coreutils.common.response.CommonResponse;
+import com.moviemang.coreutils.common.response.ErrorCode;
 import com.moviemang.datastore.entity.maria.LoginLog;
+import com.moviemang.datastore.repository.maria.MemberRepository;
 import com.moviemang.security.domain.UserCredentials;
 import com.moviemang.security.service.AuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -20,6 +25,8 @@ import java.io.IOException;
 import java.util.Collections;
 
 public class LoginFilter extends AbstractAuthenticationProcessingFilter {
+
+    private MemberRepository memberRepository;
 
     public LoginFilter(String url, AuthenticationManager authManager) {
         super(new AntPathRequestMatcher(url));
@@ -43,11 +50,15 @@ public class LoginFilter extends AbstractAuthenticationProcessingFilter {
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
         AuthenticationService.creatJwtToken(response, authResult);
         chain.doFilter(request,response);
-
     }
 
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
-        super.unsuccessfulAuthentication(request, response, failed);
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        response.setStatus(HttpStatus.UNAUTHORIZED.value());
+
+        new ObjectMapper().writeValue(response.getOutputStream(), CommonResponse.fail(ErrorCode.AUTH_LOGIN_FAIL));
+//        super.unsuccessfulAuthentication(request, response, failed);
+
     }
 }

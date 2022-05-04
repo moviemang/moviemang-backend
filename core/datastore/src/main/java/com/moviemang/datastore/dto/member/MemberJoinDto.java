@@ -1,23 +1,21 @@
-package com.moviemang.datastore.entity.maria;
+package com.moviemang.datastore.dto.member;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.moviemang.datastore.entity.maria.BaseTimeEntity;
 import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
-import java.util.ArrayList;
-import java.util.List;
 
-@Entity(name = "member")
+@Table(name = "member")
 @Getter
 @Setter
 @ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Member extends BaseTimeEntity {
+public class MemberJoinDto extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @JsonProperty("member_id")
     @Column(name = "member_id")
     private Long memberId;
 
@@ -36,16 +34,18 @@ public class Member extends BaseTimeEntity {
     @Column(name = "member_password")
     private String memberPassword; // 비밀번호
 
-    @Column(name = "member_type")
-    private String memberType;
+    @NotBlank
+    @JsonProperty("mail_service_useYn")
+    private String mailServiceUseYn; // 메일 구독 여부
 
     @Builder
-    public Member(Long memberId, String memberEmail, String memberName, String memberPassword, String memberType) {
+    public MemberJoinDto(Long memberId, String memberEmail, String memberName,
+                         String memberPassword,String mailServiceUseYn) {
         this.memberId = memberId;
         this.memberEmail = memberEmail;
         this.memberPassword = memberPassword;
         this.memberName = memberName;
-        this.memberType =  "N";
+        this.mailServiceUseYn = mailServiceUseYn;
     }
 
 }
