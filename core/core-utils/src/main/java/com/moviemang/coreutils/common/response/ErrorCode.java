@@ -30,8 +30,10 @@ public enum ErrorCode {
     MAIL_NOT_FOUND("이미 사용중인 이메일입니다"),
     MAIL_SYSTEM_ERROR("메일 발송 중 오류 발생하였습니다. 다시 시도해주세요."),
     CERTIFICATION_TIMED_OUT("메일 인증시간이 초과하였습니다. 다시 인증해주세요."),
-    CERTIFICATION_NOT_EQUAL("인증 번호가 일치하지 않습니다.");
+    CERTIFICATION_NOT_EQUAL("인증 번호가 일치하지 않습니다."),
 
+    /* 영화 API 관련 Exception */
+    INVALID_API_KEY("API키가 유효하지 않습니다.");
 
     private final String errorMsg;
 
