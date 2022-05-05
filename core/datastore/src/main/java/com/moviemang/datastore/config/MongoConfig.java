@@ -10,11 +10,11 @@ import org.springframework.data.mongodb.core.SimpleMongoClientDatabaseFactory;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
 @Configuration
-@EnableMongoRepositories(basePackages = "com.moviemang.datastore.repository.mongo", mongoTemplateRef = "testMongoTemplate")
+@EnableMongoRepositories(basePackages = "com.moviemang.datastore.repository.mongo", mongoTemplateRef = "mongoTemplate")
 @EnableMongoAuditing
 public class MongoConfig {
     @Bean
-    public MongoTemplate testMongoTemplate(MongoClient mongoClient) {
+    public MongoTemplate mongoTemplate(MongoClient mongoClient) {
         MongoDatabaseFactory factory = new SimpleMongoClientDatabaseFactory(mongoClient, "local");
         return new MongoTemplate(factory);
     }

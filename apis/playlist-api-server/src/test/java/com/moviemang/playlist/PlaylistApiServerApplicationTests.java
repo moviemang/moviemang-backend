@@ -6,9 +6,9 @@ import com.moviemang.coreutils.common.exception.MovieApiException;
 import com.moviemang.coreutils.common.response.ErrorCode;
 import com.moviemang.coreutils.model.vo.HttpClientRequest;
 import com.moviemang.coreutils.utils.httpclient.HttpClient;
-import com.moviemang.datastore.domain.PlayListOrderByLikeDto;
+import com.moviemang.datastore.domain.PlaylistOrderByLikeDto;
 import com.moviemang.datastore.repository.mongo.like.LikeRepository;
-import com.moviemang.datastore.repository.mongo.playList.PlaylistRepository;
+import com.moviemang.datastore.repository.mongo.playlist.PlaylistRepository;
 import com.moviemang.datastore.repository.mongo.tag.TagRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -97,7 +97,7 @@ class PlaylistApiServerApplicationTests {
         // 좋아요 Collection 검색 조건
         Aggregation likeAggregation = Aggregation.newAggregation(
                 Aggregation.project("targetId", "regDate", "likeType"), // 해당 컬럼들만 추출
-                Aggregation.match(Criteria.where("regDate").gte(LocalDate.now().minusDays(1)).and("likeType").is("M")), // 전날 기준, 영화만 검색
+                Aggregation.match(Criteria.where("regDate").gte(LocalDate.now().minusDays(3)).and("likeType").is("M")), // 전날 기준, 영화만 검색
                 Aggregation.group("targetId").count().as("likeCount"),  // 플레이리스트 PK값으로 GROUP핑 한후 Like수 Count
                 Aggregation.sort(Sort.Direction.DESC, "likeCount"), // GROUPING한 likeCount를 내림차순으로 정렬
                 Aggregation.limit(4) // 상위 4개의 플레이리스트만 추출
@@ -106,11 +106,11 @@ class PlaylistApiServerApplicationTests {
         /**
          * filterByTypeAndGroupByTargetId(조건문, 조회할 Collection)
          */
-        List<PlayListOrderByLikeDto> filterByTypeAndGroupByTargetId = likeRepository.filterByTypeAndGroupByTargetId(likeAggregation, "like")
+        List<PlaylistOrderByLikeDto> filterByTypeAndGroupByTargetId = likeRepository.filterByTypeAndGroupByTargetId(likeAggregation, "like")
                 .getMappedResults()
                 .stream()
                 .map( likeObj -> {
-                    PlayListOrderByLikeDto playListOrderByLikeDto = playlistRepository.findPlayListDtoBy_id(likeObj.get_id()); // 좋아요 Document의 targetId로 플레이리스트 조회
+                    PlaylistOrderByLikeDto playListOrderByLikeDto = playlistRepository.findPlaylistDtoBy_id(likeObj.get_id()); // 좋아요 Document의 targetId로 플레이리스트 조회
                     playListOrderByLikeDto.setLikeCount(likeObj.getLikeCount()); // DTO에 좋아요 횟수 셋팅
                     List<String> imgPathList = new ArrayList<>();   // 포스터 이미지 경로를 담는 List
                     List<Integer> movieIds = playListOrderByLikeDto.getMovieIds(); // 각 영화의 아이디로 Movie Open Api에서 이미지 경로 받아옴
@@ -140,7 +140,7 @@ class PlaylistApiServerApplicationTests {
                 })
                 .collect(Collectors.toList());;
 
-        for(PlayListOrderByLikeDto playlist : filterByTypeAndGroupByTargetId){
+        for(PlaylistOrderByLikeDto playlist : filterByTypeAndGroupByTargetId){
             log.info("플레이리스트 : {}", playlist.toString());
         }
     }
