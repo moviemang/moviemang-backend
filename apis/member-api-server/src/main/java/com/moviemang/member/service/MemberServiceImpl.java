@@ -110,8 +110,8 @@ public class MemberServiceImpl implements MemberService{
     public CommonResponse checkEmail(String email) {
         int duplicatedUser = memberRepository.countMemberByMemberEmail(email);
 
-		if(duplicatedUser!=0) return CommonResponse.fail(ErrorCode.MAIL_NOT_FOUND);
-		else return CommonResponse.success(CommonResponse.Result.SUCCESS);
+		if(duplicatedUser!=0) return CommonResponse.fail(ErrorCode.EMAIL_DUPLICATED);
+		else return CommonResponse.success(CommonResponse.Result.SUCCESS,"사용 가능한 이메일입니다.",HttpStatus.OK);
     }
 
 	/**
@@ -124,8 +124,8 @@ public class MemberServiceImpl implements MemberService{
 	public CommonResponse checkNick(String nick) {
 		int duplicatedUser = memberRepository.countMemberByMemberName(nick);
 
-		if(duplicatedUser!=0) return CommonResponse.fail(ErrorCode.NICK_NOT_FOUND);
-		else return CommonResponse.success(CommonResponse.Result.SUCCESS);
+		if(duplicatedUser!=0) return CommonResponse.fail(ErrorCode.NICK_DUPLICATED);
+		else return CommonResponse.success(CommonResponse.Result.SUCCESS,"사용 가능한 닉네임입니다.",HttpStatus.OK);
 	}
 
 	/**
