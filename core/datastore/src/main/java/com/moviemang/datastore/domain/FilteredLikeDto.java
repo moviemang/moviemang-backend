@@ -2,14 +2,10 @@ package com.moviemang.datastore.domain;
 
 import lombok.*;
 import org.bson.types.ObjectId;
-import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.persistence.Id;
 
 @Getter
-@Setter
-@ToString
-@Document(collection = "FilteredLikeDto")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class FilteredLikeDto {
 
