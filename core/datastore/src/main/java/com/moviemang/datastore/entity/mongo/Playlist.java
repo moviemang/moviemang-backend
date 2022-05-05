@@ -10,7 +10,7 @@ import java.util.List;
 
 @Getter
 @Setter
-@Document(collection = "playList")
+@Document(collection = "playlist")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Playlist extends BaseTimeEntity {
     @Id
@@ -23,7 +23,7 @@ public class Playlist extends BaseTimeEntity {
     private boolean display;
 
     @Builder
-    public Playlist(ObjectId _id, String playlistTitle, Long memberId, String playListDescription, List<Tag> tags, List<Integer> movieIds, boolean display) {
+    public Playlist(ObjectId _id, String playlistTitle, Long memberId, String playlistDescription, List<Tag> tags, List<Integer> movieIds, boolean display) {
         this._id = _id;
         this.playlistTitle = playlistTitle;
         this.memberId = memberId;
