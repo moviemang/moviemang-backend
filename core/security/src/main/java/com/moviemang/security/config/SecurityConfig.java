@@ -1,7 +1,7 @@
 package com.moviemang.security.config;
 
 import com.moviemang.security.filter.LoginFilter;
-import com.moviemang.security.handler.CustomAccessDeniedHandler;
+import com.moviemang.security.handler.CustomAuthenticationFailureHandler;
 import com.moviemang.security.service.UserDetailServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,10 +33,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     private CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
     @Autowired
-    private CustomAccessDeniedHandler customAccessDeniedHandler;
-
-
-
+    private CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
 
     @Bean
     public PasswordEncoder passwordEncoder(){
@@ -53,7 +50,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .anyRequest().permitAll()
                 .and()
                     .exceptionHandling().authenticationEntryPoint(customAuthenticationEntryPoint)
-                    .accessDeniedHandler(customAccessDeniedHandler)
+//                    .accessDeniedHandler(customAuthenticationFailureHandler)
                 .and()
                 .addFilterBefore(new LoginFilter("/login", authenticationManager()),
                         UsernamePasswordAuthenticationFilter.class);

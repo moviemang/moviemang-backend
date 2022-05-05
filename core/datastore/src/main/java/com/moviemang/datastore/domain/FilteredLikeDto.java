@@ -1,6 +1,5 @@
-package com.moviemang.datastore.entity.mongo;
+package com.moviemang.datastore.domain;
 
-import com.moviemang.datastore.entity.maria.BaseTimeEntity;
 import lombok.*;
 import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -9,16 +8,18 @@ import javax.persistence.Id;
 
 @Getter
 @Setter
-@Document(collection = "tag")
+@ToString
+@Document(collection = "FilteredLikeDto")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Tag extends BaseTimeEntity {
+public class FilteredLikeDto {
+
     @Id
     private ObjectId _id;
-    private String tagName;
+    private int likeCount;
 
     @Builder
-    public Tag(ObjectId _id, String tagName) {
+    public FilteredLikeDto(ObjectId _id,int likeCount) {
         this._id = _id;
-        this.tagName = tagName;
+        this.likeCount = likeCount;
     }
 }

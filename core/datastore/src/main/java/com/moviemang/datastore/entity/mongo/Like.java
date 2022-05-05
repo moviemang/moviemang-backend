@@ -9,16 +9,21 @@ import javax.persistence.Id;
 
 @Getter
 @Setter
-@Document(collection = "tag")
+@ToString
+@Document(collection = "like")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Tag extends BaseTimeEntity {
+public class Like extends BaseTimeEntity {
     @Id
     private ObjectId _id;
-    private String tagName;
+    private int memberId;
+    private ObjectId targetId;
+    private String likeType;
 
     @Builder
-    public Tag(ObjectId _id, String tagName) {
+    public Like(ObjectId _id, int memberId, ObjectId targetId, String likeType) {
         this._id = _id;
-        this.tagName = tagName;
+        this.memberId = memberId;
+        this.targetId = targetId;
+        this.likeType = likeType;
     }
 }

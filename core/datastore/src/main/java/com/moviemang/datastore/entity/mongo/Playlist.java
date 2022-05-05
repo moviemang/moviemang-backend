@@ -1,36 +1,35 @@
 package com.moviemang.datastore.entity.mongo;
 
-import com.google.common.collect.Lists;
 import com.moviemang.datastore.entity.maria.BaseTimeEntity;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.bson.types.ObjectId;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-import javax.persistence.*;
+import javax.persistence.Id;
 import java.util.List;
 
-@Builder
 @Getter
-@AllArgsConstructor
-@NoArgsConstructor
-@Entity
+@Setter
+@Document(collection = "playList")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Playlist extends BaseTimeEntity {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long playlistId;
-    private String playlistTitle;
-    private Long memberId;
-    private String playlistDescription;
+    private ObjectId _id;
+    private String playListTitle;
+    private int memberId;
+    private String playListDescription;
+    private List<Tag> tags;
+    private List<Integer> movieIds;
+    private String display;
 
-    @OneToMany(fetch = FetchType.LAZY,mappedBy = "tag")
-    @JoinColumn(table = "tag")
-    private List <Tag> tags= Lists.newArrayList();
-    private List<Long> movieIds;
-    private boolean display;
-
-    public Integer calculateMovieCount(){
-        return this.movieIds.size();
+    @Builder
+    public Playlist(ObjectId _id, String playListTitle, int memberId, String playListDescription, List<Tag> tags, List<Integer> movieIds, String display) {
+        this._id = _id;
+        this.playListTitle = playListTitle;
+        this.memberId = memberId;
+        this.playListDescription = playListDescription;
+        this.tags = tags;
+        this.movieIds = movieIds;
+        this.display = display;
     }
-
 }
