@@ -58,7 +58,6 @@ public class MemberController {
     }
 	@PostMapping(path = "/certificationCheck")
     public CommonResponse checkCertification(@RequestBody MailCertificationDto certificationDto){
-    	log.info("certificationDto : {}", certificationDto.toString());
     	return memberService.checkMailCertification(certificationDto);
     }
 
