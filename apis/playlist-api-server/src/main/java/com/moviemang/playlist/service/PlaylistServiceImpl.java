@@ -7,12 +7,12 @@ import com.moviemang.coreutils.common.response.CommonResponse;
 import com.moviemang.coreutils.common.response.ErrorCode;
 import com.moviemang.coreutils.model.vo.HttpClientRequest;
 import com.moviemang.coreutils.utils.httpclient.HttpClient;
+import com.moviemang.datastore.config.MovieApi;
 import com.moviemang.datastore.domain.PlaylistOrderByLikeDto;
 import com.moviemang.datastore.entity.mongo.Playlist;
 import com.moviemang.datastore.repository.maria.MemberRepository;
 import com.moviemang.datastore.repository.mongo.like.LikeRepository;
 import com.moviemang.datastore.repository.mongo.playlist.PlaylistRepository;
-import com.moviemang.playlist.config.MovieApi;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
@@ -33,9 +33,7 @@ public class PlaylistServiceImpl implements PlaylistService{
 
     private PlaylistRepository playlistRepository;
     private LikeRepository likeRepository;
-
     private MemberRepository memberRepository;
-
     private ObjectMapper om;
     private MovieApi movieApi;
 
@@ -86,7 +84,6 @@ public class PlaylistServiceImpl implements PlaylistService{
                     List<String> imgPathList = new ArrayList<>();
                     List<Integer> movieIds = playlistInfo.getMovieIds();
                     for(int movieId : movieIds){
-                        String img = movieApi.getIMG_BASE_URL();
                         request.setUrl(String.format("%s/movie/%d/images", movieApi.getBASE_URL(), movieId));
                         request.setData(param);
                         try {
@@ -117,7 +114,7 @@ public class PlaylistServiceImpl implements PlaylistService{
                             .likeCount(playlistLikeJoin.getLikeCount())
                             .build();
                 })
-                .collect(Collectors.toList());;
+                .collect(Collectors.toList());
 
         return CommonResponse.success(filterByTypeAndGroupByTargetId);
     }
