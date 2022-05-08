@@ -8,5 +8,4 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface PlaylistRepository extends MongoRepository<Playlist, ObjectId>, CustomizedPlaylistRepository {
 
-    Playlist findPlaylistBy_id(ObjectId id);
 }
