@@ -18,7 +18,7 @@ public class PlaylistOrderByLikeDto {
     private String memberName;
     private List<String> representativeImagePath;
     private List<Tag> tags;
-    private int moiveCount;
+    private int movieCount;
     private int likeCount;
 
     @Builder
@@ -29,7 +29,7 @@ public class PlaylistOrderByLikeDto {
         this.memberName = memberName;
         this.representativeImagePath = representativeImagePath;
         this.tags = tags;
-        this.moiveCount = movieCount;
+        this.movieCount = movieCount;
         this.likeCount = likeCount;
     }
 }
