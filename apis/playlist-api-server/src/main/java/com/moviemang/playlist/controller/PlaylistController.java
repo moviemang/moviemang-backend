@@ -6,8 +6,8 @@ import com.moviemang.playlist.service.PlaylistService;
 import com.moviemang.security.uitls.AuthenticationUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -29,6 +29,11 @@ public class PlaylistController {
         authenticationUtil.checkAuthenticationInfo(httpServletRequest, request);
         System.out.println(request.getEmail());
         System.out.println(request.getId());
+    }
+
+    @GetMapping("/playlistOrderByLike")
+    public CommonResponse playlistOrderByLike(){
+        return playlistService.playlistOrderByLike();
     }
 
 }
