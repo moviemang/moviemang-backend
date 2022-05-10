@@ -16,7 +16,7 @@ public abstract class BaseTimeEntity {
 
     @CreatedDate
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @Column(name = "reg_Date")
+    @Column(name = "reg_date")
     private LocalDateTime regDate; // 회원 등록일
 
     @LastModifiedDate
@@ -24,11 +24,11 @@ public abstract class BaseTimeEntity {
     @Column(name = "mod_date")
     private LocalDateTime modDate; // 회원 수정일
 
-    public LocalDateTime getCreatedDate() {
+    public LocalDateTime getRegDate() {
         return regDate;
     }
 
-    public LocalDateTime getModifiedDate() {
+    public LocalDateTime getModDate() {
         return modDate;
     }
 }
