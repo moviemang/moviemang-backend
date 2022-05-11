@@ -35,7 +35,7 @@ public class MemberJoinDto extends BaseTimeEntity {
     private String memberPassword; // 비밀번호
 
     @NotBlank
-    @JsonProperty("mail_service_useYn")
+    @JsonProperty("mail_service_use_yn")
     private String mailServiceUseYn; // 메일 구독 여부
 
     @Builder
