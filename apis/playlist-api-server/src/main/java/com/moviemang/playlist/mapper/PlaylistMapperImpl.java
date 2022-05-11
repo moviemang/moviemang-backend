@@ -7,11 +7,19 @@ import com.moviemang.playlist.dto.PlaylistInfo;
 import com.moviemang.playlist.dto.TagInfo;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.Generated;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+@Generated(
+        value = "org.mapstruct.ap.MappingProcessor",
+        date = "2022-05-01T21:03:36+0900",
+        comments = "version: 1.4.2.Final, compiler: IncrementalProcessingEnvironment from gradle-language-java-7.1.1.jar, environment: Java 11.0.14.1 (JetBrains s.r.o.)"
+)
+@Component
 public class PlaylistMapperImpl implements PlaylistMapper {
 
     @Autowired
@@ -22,11 +30,11 @@ public class PlaylistMapperImpl implements PlaylistMapper {
         if (playlist == null) return null;
 
         return PlaylistInfo.builder()
-                .id(playlist.getPlaylistId())
+                .id(playlist.get_id())
                 .title(playlist.getPlaylistTitle())
                 .tags(tagInfos(playlist.getTags()))
-                .nickname(memberRepository.findByMemberId(playlist.getMemberId()).getMemberName())
-                .movieCount(playlist.calculateMovieCount())
+                .nickname(memberRepository.findByMemberId(playlist.getMemberId()).get().getMemberName())
+                .movieCount(playlist.getMovieIds().size())
                 .build();
     }
 
@@ -55,8 +63,8 @@ public class PlaylistMapperImpl implements PlaylistMapper {
     public TagInfo of(Tag tag) {
         if (tag == null) return null;
         TagInfo.TagInfoBuilder tagInfo = TagInfo.builder();
-        tagInfo.id(tag.getId());
-        tagInfo.name(tag.getName());
+        tagInfo.id(tag.get_id());
+        tagInfo.name(tag.getTagName());
 
         return tagInfo.build();
     }

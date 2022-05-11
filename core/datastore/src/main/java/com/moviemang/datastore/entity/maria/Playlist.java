@@ -12,7 +12,7 @@ import javax.persistence.Id;
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class PlayList {
+public class Playlist {
 
 
     private Long id;

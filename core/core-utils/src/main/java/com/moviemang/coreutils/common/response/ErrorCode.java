@@ -13,7 +13,9 @@ public enum ErrorCode {
     COMMON_EMPTY_DATA("데이터가 존재하지 않습니다."),
 
     // Join CHECK Exception
-    NICK_NOT_FOUND("이미 사용중인 닉네임입니다"),
+    NICK_DUPLICATED("이미 사용중인 닉네임입니다"),
+    EMAIL_DUPLICATED("이미 사용중인 이메일입니다"),
+
 
     // Auth Exception
     USER_NOT_FOUND("회원을 찾을수 없습니다."),

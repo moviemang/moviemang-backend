@@ -10,24 +10,23 @@ import java.util.List;
 
 @Getter
 @Setter
-@Document(collection = "playList")
+@Document(collection = "playlist")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Playlist extends BaseTimeEntity {
     @Id
     private ObjectId _id;
-    private String playListTitle;
-    private int memberId;
-    private String playListDescription;
+    private String playlistTitle;
+    private Long memberId;
+    private String playlistDescription;
     private List<Tag> tags;
     private List<Integer> movieIds;
-    private String display;
+    private boolean display;
 
     @Builder
-    public Playlist(ObjectId _id, String playListTitle, int memberId, String playListDescription, List<Tag> tags, List<Integer> movieIds, String display) {
-        this._id = _id;
-        this.playListTitle = playListTitle;
+    public Playlist(String playlistTitle, Long memberId, String playlistDescription, List<Tag> tags, List<Integer> movieIds, boolean display) {
+        this.playlistTitle = playlistTitle;
         this.memberId = memberId;
-        this.playListDescription = playListDescription;
+        this.playlistDescription = playlistDescription;
         this.tags = tags;
         this.movieIds = movieIds;
         this.display = display;

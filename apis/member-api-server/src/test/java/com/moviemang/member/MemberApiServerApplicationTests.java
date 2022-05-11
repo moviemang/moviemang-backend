@@ -29,7 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Slf4j
-@EnableJpaAuditing
+//@EnableJpaAuditing
 @Profile("local")
 @AutoConfigureMockMvc
 @SpringBootTest
@@ -66,8 +66,8 @@ class MemberApiServerApplicationTests {
         BeanUtils.copyProperties(memberJoinDto,joinUser,"memberId","mailServiceUseYn");
 
 //        memberService.regist(member);
-        log.info("memberJoinDto   :  "+memberJoinDto.toString());
-        log.info("joinUser   :  "+joinUser.toString());
+//        log.info("memberJoinDto   :  "+memberJoinDto.toString());
+//        log.info("joinUser   :  "+joinUser.toString());
 
     }
     @Test
@@ -80,9 +80,9 @@ class MemberApiServerApplicationTests {
     void insertUser(){
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
         MemberJoinDto memberJoinDto = MemberJoinDto.builder()
-                .memberEmail("testusera45@gmail.com")
-                .memberName("쿠1쿠2쿠3aa")
-                .memberPassword("testusera45")
+                .memberEmail("test1@gmail.com")
+                .memberName("test1")
+                .memberPassword("pass1")
                 .mailServiceUseYn("영화")
                 .build();
         memberService.regist(memberJoinDto);
