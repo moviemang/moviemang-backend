@@ -1,6 +1,15 @@
 spring:
   profiles:
     active: local
+movie:
+  api-key: cbfa45007409cc068286bfeafd12a530
+  base-url: https://api.themoviedb.org/3/
+  img-url: https://image.tmdb.org/t/p/w500
+---
+spring:
+  config:
+    activate:
+      on-profile: local
   jpa:
     hibernate:
       ddl-auto: none
@@ -10,5 +19,36 @@ spring:
 
 server:
   port: 8080
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+  jpa:
+    hibernate:
+      ddl-auto: none
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
+    show-sql: true
+
+server:
+  port: 8080
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+  jpa:
+    hibernate:
+      ddl-auto: none
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
+    show-sql: true
+
+server:
+  port: 8080
+
+
+
   
 

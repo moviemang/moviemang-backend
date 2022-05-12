@@ -30,7 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @Slf4j
 @EnableJpaAuditing
-@Profile("local")
+@Profile("dev")
 @AutoConfigureMockMvc
 @SpringBootTest
 class MemberApiServerApplicationTests {
