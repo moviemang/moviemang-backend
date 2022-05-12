@@ -30,7 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @Slf4j
 //@EnableJpaAuditing
-@Profile("local")
+@Profile("dev")
 @AutoConfigureMockMvc
 @SpringBootTest
 class MemberApiServerApplicationTests {
@@ -83,31 +83,31 @@ class MemberApiServerApplicationTests {
                 .memberEmail("test1@gmail.com")
                 .memberName("test1")
                 .memberPassword("pass1")
-                .mailServiceUseYn("영화")
+                .mailServiceUseYn("N")
                 .build();
         memberService.regist(memberJoinDto);
     }
 
-    @Test
-    @WithMockUser(username = "test2@naver.com", password = "test")
-    void  login(){
-        Map<String, String> input = new HashMap<>();
-        // body에 json 형식으로 회원의 데이터를 넣기 위해서 Map을 이용한다.
-        input.put("username", "test2@naver.com");
-        input.put("password", "pass2");
-        try {
-            mockMvc.perform(post("/login")
-                            .contentType("application/json")
-                            .content(new ObjectMapper().writeValueAsString(input))
-                    )
-
-
-                    .andExpect(status().isOk())
-                    //Http 200을 기대
-                    .andDo(print());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+//    @Test
+//    @WithMockUser(username = "test2@naver.com", password = "test")
+//    void  login(){
+//        Map<String, String> input = new HashMap<>();
+//        // body에 json 형식으로 회원의 데이터를 넣기 위해서 Map을 이용한다.
+//        input.put("username", "test2@naver.com");
+//        input.put("password", "pass2");
+//        try {
+//            mockMvc.perform(post("/login")
+//                            .contentType("application/json")
+//                            .content(new ObjectMapper().writeValueAsString(input))
+//                    )
+//
+//
+//                    .andExpect(status().isOk())
+//                    //Http 200을 기대
+//                    .andDo(print());
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//    }
 
 }

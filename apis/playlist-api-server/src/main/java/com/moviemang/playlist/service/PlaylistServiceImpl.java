@@ -26,6 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
@@ -50,7 +51,6 @@ public class PlaylistServiceImpl implements PlaylistService{
     private ObjectMapper om;
     private MovieApi movieApi;
 
-    @Autowired
     public PlaylistServiceImpl(PlaylistRepository playlistRepository, PlaylistMapper playlistMapper, LikeRepository likeRepository, MemberRepository memberRepository, ObjectMapper om, MovieApi movieApi) {
         this.playlistRepository = playlistRepository;
         this.playlistMapper = playlistMapper;
@@ -76,6 +76,7 @@ public class PlaylistServiceImpl implements PlaylistService{
                     .build());
 
         } catch (Exception e){
+            e.printStackTrace();
             return CommonResponse.fail(ErrorCode.COMMON_SYSTEM_ERROR);
         }
 
