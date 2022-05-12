@@ -1,11 +1,4 @@
 spring:
-  data:
-    mongodb:
-      host: localhost
-      port: 27017
-      database: moviemang
-      username: root
-      password: root-pass
   jpa:
     open-in-view: false
     generate-ddl: true
@@ -28,3 +21,10 @@ management:
   health:
     diskspace:
       enabled: true
+
+movie:
+  api-key: cbfa45007409cc068286bfeafd12a530
+  base-url : https://api.themoviedb.org/3/
+  img-url: https://image.tmdb.org/t/p/w500
+
+
