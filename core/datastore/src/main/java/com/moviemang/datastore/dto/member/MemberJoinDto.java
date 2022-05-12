@@ -20,22 +20,22 @@ public class MemberJoinDto extends BaseTimeEntity {
     private Long memberId;
 
     @Email(message = "이메일을 올바르게 입력하세요.")
-    @JsonProperty("member_email")
+    @JsonProperty("email")
     @Column(name = "member_email")
     private String memberEmail; // 이메일
 
     @NotBlank
-    @JsonProperty("member_name")
+    @JsonProperty("name")
     @Column(name = "member_name")
     private String memberName; // 닉네임
 
     @NotBlank
-    @JsonProperty("member_password")
+    @JsonProperty("password")
     @Column(name = "member_password")
     private String memberPassword; // 비밀번호
 
     @NotBlank
-    @JsonProperty("mail_service_useYn")
+    @JsonProperty("mail_service_use_yn")
     private String mailServiceUseYn; // 메일 구독 여부
 
     @Builder

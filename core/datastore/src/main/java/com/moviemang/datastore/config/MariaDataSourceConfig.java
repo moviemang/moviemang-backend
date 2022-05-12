@@ -19,6 +19,7 @@ import java.util.HashMap;
 
 
 @Configuration
+//@PropertySource("classpath:${spring.profiles.active}/jdbc.properties")
 @PropertySource("classpath:${spring.profiles.active}/jdbc.properties")
 @EnableJpaRepositories(
         basePackages = "com.moviemang.datastore.repository.maria",

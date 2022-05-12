@@ -29,7 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Slf4j
-//@EnableJpaAuditing
+@EnableJpaAuditing
 @Profile("dev")
 @AutoConfigureMockMvc
 @SpringBootTest
@@ -66,8 +66,8 @@ class MemberApiServerApplicationTests {
         BeanUtils.copyProperties(memberJoinDto,joinUser,"memberId","mailServiceUseYn");
 
 //        memberService.regist(member);
-//        log.info("memberJoinDto   :  "+memberJoinDto.toString());
-//        log.info("joinUser   :  "+joinUser.toString());
+        log.info("memberJoinDto   :  "+memberJoinDto.toString());
+        log.info("joinUser   :  "+joinUser.toString());
 
     }
     @Test
@@ -80,34 +80,34 @@ class MemberApiServerApplicationTests {
     void insertUser(){
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
         MemberJoinDto memberJoinDto = MemberJoinDto.builder()
-                .memberEmail("test1@gmail.com")
-                .memberName("test1")
-                .memberPassword("pass1")
-                .mailServiceUseYn("N")
+                .memberEmail("testusera45@gmail.com")
+                .memberName("쿠1쿠2쿠3aa")
+                .memberPassword("testusera45")
+                .mailServiceUseYn("영화")
                 .build();
         memberService.regist(memberJoinDto);
     }
 
-//    @Test
-//    @WithMockUser(username = "test2@naver.com", password = "test")
-//    void  login(){
-//        Map<String, String> input = new HashMap<>();
-//        // body에 json 형식으로 회원의 데이터를 넣기 위해서 Map을 이용한다.
-//        input.put("username", "test2@naver.com");
-//        input.put("password", "pass2");
-//        try {
-//            mockMvc.perform(post("/login")
-//                            .contentType("application/json")
-//                            .content(new ObjectMapper().writeValueAsString(input))
-//                    )
-//
-//
-//                    .andExpect(status().isOk())
-//                    //Http 200을 기대
-//                    .andDo(print());
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//    }
+    @Test
+    @WithMockUser(username = "test2@naver.com", password = "test")
+    void  login(){
+        Map<String, String> input = new HashMap<>();
+        // body에 json 형식으로 회원의 데이터를 넣기 위해서 Map을 이용한다.
+        input.put("username", "test2@naver.com");
+        input.put("password", "pass2");
+        try {
+            mockMvc.perform(post("/login")
+                            .contentType("application/json")
+                            .content(new ObjectMapper().writeValueAsString(input))
+                    )
+
+
+                    .andExpect(status().isOk())
+                    //Http 200을 기대
+                    .andDo(print());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
 }

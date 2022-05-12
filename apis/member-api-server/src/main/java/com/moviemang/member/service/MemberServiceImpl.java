@@ -97,6 +97,7 @@ public class MemberServiceImpl implements MemberService{
 
 		return CommonResponse.builder()
 				.result(CommonResponse.Result.SUCCESS)
+				.message("회원가입이 완료되었습니다.")
 				.status(HttpStatus.CREATED)
 				.build();
     }
