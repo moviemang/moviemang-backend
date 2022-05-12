@@ -6,7 +6,7 @@ import com.moviemang.coreutils.common.exception.BaseException;
 import com.moviemang.coreutils.common.exception.InvalidParamException;
 import com.moviemang.coreutils.common.response.CommonResponse;
 import com.moviemang.coreutils.common.response.ErrorCode;
-import com.moviemang.datastore.dto.MailCertificationDto;
+import com.moviemang.datastore.dto.mail.MailCertificationDto;
 import com.moviemang.datastore.dto.member.MemberJoinDto;
 import com.moviemang.datastore.entity.maria.MailCertification;
 import com.moviemang.datastore.entity.maria.MailServiceUser;
