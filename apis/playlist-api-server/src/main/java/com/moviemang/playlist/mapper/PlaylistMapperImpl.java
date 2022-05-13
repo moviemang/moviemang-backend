@@ -30,11 +30,11 @@ public class PlaylistMapperImpl implements PlaylistMapper {
         if (playlist == null) return null;
 
         return PlaylistInfo.builder()
-                .id(playlist.get_id())
+                .id(playlist.get_id().toHexString())
                 .title(playlist.getPlaylistTitle())
                 .tags(tagInfos(playlist.getTags()))
                 .nickname(memberRepository.findByMemberId(playlist.getMemberId()).get().getMemberName())
-                .movieCount(playlist.getMovieIds().size())
+                .movieCount(CollectionUtils.isEmpty(playlist.getMovieIds())?0:playlist.getMovieIds().size())
                 .build();
     }
 
@@ -53,8 +53,10 @@ public class PlaylistMapperImpl implements PlaylistMapper {
 
     protected List<TagInfo> tagInfos(List<Tag> tags){
         List<TagInfo> tagInfos = new ArrayList<>();
-        for (Tag tag : tags){
-            tagInfos.add(this.of(tag));
+        if (CollectionUtils.isNotEmpty(tags)){
+            for (Tag tag : tags){
+                tagInfos.add(this.of(tag));
+            }
         }
         return tagInfos;
     }

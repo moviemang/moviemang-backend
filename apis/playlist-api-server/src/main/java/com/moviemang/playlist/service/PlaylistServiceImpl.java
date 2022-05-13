@@ -76,11 +76,28 @@ public class PlaylistServiceImpl implements PlaylistService{
                     .build());
 
         } catch (Exception e){
-            e.printStackTrace();
-            return CommonResponse.fail(ErrorCode.COMMON_SYSTEM_ERROR);
+            log.error(e.getMessage());
+            throw new BaseException(ErrorCode.COMMON_SYSTEM_ERROR);
         }
 
         return CommonResponse.success(myPlaylist.build());
+    }
+
+    @Override
+    public CommonResponse save(com.moviemang.playlist.dto.Playlist.Request playlist) {
+        try {
+            playlistRepository.save(Playlist.builder()
+                    .playlistTitle(playlist.getTitle())
+                    .playlistDescription(playlist.getDescription())
+                    .memberId(playlist.getId())
+                    .display(playlist.isDisplay())
+                    .build());
+        } catch (Exception e){
+            log.error(e.getMessage());
+            throw new BaseException(ErrorCode.PLAYLIST_SAVE_FAIL);
+        }
+
+        return CommonResponse.success(null);
     }
 
     @Override

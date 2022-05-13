@@ -129,10 +129,10 @@ public class AuthenticationService {
                 .getBody();
 
         Integer id = (Integer) cliam.get("id");
-        return CommonParam.builder()
-                .email((String) cliam.get("username"))
-                .id(id.longValue())
-                .build();
+        return new CommonParam(){{
+            setEmail((String) cliam.get("username"));
+            setId(id.longValue());
+        }};
     }
 
     public static String resolveToken(HttpServletRequest request) {

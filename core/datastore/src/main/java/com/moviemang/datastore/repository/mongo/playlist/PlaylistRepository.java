@@ -15,4 +15,6 @@ public interface PlaylistRepository extends MongoRepository<Playlist, ObjectId>,
 
     PlayListOrderByLikeDto findPlayListDtoBy_id(ObjectId id);
     List<Playlist> findByMemberId(Long memberId, Pageable pageRequest);
+//    List<Playlist> findByMemberIdOrderByRegDate(Long memberId, Pageable pageRequest);
+
 }

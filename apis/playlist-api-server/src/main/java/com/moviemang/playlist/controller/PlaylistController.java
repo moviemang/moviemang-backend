@@ -1,19 +1,21 @@
 package com.moviemang.playlist.controller;
 
 import com.moviemang.coreutils.common.response.CommonResponse;
-import com.moviemang.datastore.entity.mongo.Playlist;
 import com.moviemang.playlist.dto.MyPlaylist;
+import com.moviemang.playlist.dto.Playlist;
 import com.moviemang.playlist.service.PlaylistService;
 import com.moviemang.security.uitls.AuthenticationUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 
+@RequestMapping(value = "/playlist")
 @Slf4j
 @RestController
 public class PlaylistController {
@@ -34,13 +36,19 @@ public class PlaylistController {
 //        System.out.println(request.getId());
 //    }
 
-    @GetMapping("/me/playlist")
-    public CommonResponse<MyPlaylist> myPlaylist(HttpServletRequest httpServletRequest,
-                                                 Pageable pageRequest, MyPlaylist.Request request){
+    @GetMapping("/me")
+    public CommonResponse myPlaylist(HttpServletRequest httpServletRequest,
+                                     @PageableDefault(page = 1, size = 20) Pageable pageRequest, MyPlaylist.Request request){
         authenticationUtil.checkAuthenticationInfo(httpServletRequest, request);
+        CommonResponse commonResponse = playlistService.myPlaylist(request, pageRequest);
+        return commonResponse;
 
-        return playlistService.myPlaylist(request, pageRequest);
+    }
 
+    @PostMapping("/me")
+    public CommonResponse<MyPlaylist> save(HttpServletRequest httpServletRequest, @RequestBody Playlist.Request request){
+        authenticationUtil.checkAuthenticationInfo(httpServletRequest, request);
+        return playlistService.save(request);
     }
 
 
