@@ -15,7 +15,7 @@ management:
   endpoints:
     web:
       cors:
-        allowed-methods: *
+        allowed-methods: '*'
       exposure:
         include: '*'
   health:
@@ -25,6 +25,7 @@ management:
 movie:
   api-key: cbfa45007409cc068286bfeafd12a530
   base-url : https://api.themoviedb.org/3/
-  img-url: https://image.tmdb.org/t/p/w500
+  img-base-url: https://image.tmdb.org/t/p/w500
+
 
 

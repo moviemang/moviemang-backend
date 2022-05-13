@@ -7,7 +7,7 @@ import lombok.Setter;
 @Setter
 public class MovieApi {
 
-    private String API_KEY;
-    private String BASE_URL;
-    private String IMG_BASE_URL;
+    private String apiKey;
+    private String baseUrl;
+    private String imgBaseUrl;
 }

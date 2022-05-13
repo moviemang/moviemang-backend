@@ -6,11 +6,11 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 
 @Configuration
-@PropertySource(value = "classpath:/application.yml", factory = YamlPropertySourceFactory.class)
+@PropertySource(value = "classpath:movie/movieApi.yml", factory = YamlPropertySourceFactory.class)
 public class MovieApiConfig {
     @Bean
     @ConfigurationProperties(prefix = "movie")
-    public MovieApi MovieApi(){
+    public MovieApi getMovieApiProperties(){
         return new MovieApi();
     }
 

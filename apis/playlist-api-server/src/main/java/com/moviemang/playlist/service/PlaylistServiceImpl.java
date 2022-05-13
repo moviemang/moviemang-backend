@@ -7,7 +7,7 @@ import com.moviemang.coreutils.common.response.CommonResponse;
 import com.moviemang.coreutils.common.response.ErrorCode;
 import com.moviemang.coreutils.model.vo.HttpClientRequest;
 import com.moviemang.coreutils.utils.httpclient.HttpClient;
-import com.moviemang.datastore.config.MovieApi;
+import com.moviemang.datastore.config.MovieApiConfig;
 import com.moviemang.datastore.domain.PlaylistOrderByLikeDto;
 import com.moviemang.datastore.repository.maria.MemberRepository;
 import com.moviemang.datastore.repository.mongo.like.LikeRepository;
@@ -31,22 +31,22 @@ public class PlaylistServiceImpl implements PlaylistService{
     private LikeRepository likeRepository;
     private MemberRepository memberRepository;
     private ObjectMapper om;
-    private MovieApi movieApi;
+    private MovieApiConfig movieApiConfig;
 
     @Autowired
     public PlaylistServiceImpl(PlaylistRepository playlistRepository, LikeRepository likeRepository, MemberRepository memberRepository,
-                               MovieApi movieApi, ObjectMapper om){
+                               MovieApiConfig movieApiConfig, ObjectMapper om){
         this.playlistRepository = playlistRepository;
         this.likeRepository = likeRepository;
         this.memberRepository = memberRepository;
-        this.movieApi = movieApi;
+        this.movieApiConfig = movieApiConfig;
         this.om = om;
     }
 
     @Override
     public CommonResponse playlistOrderByLike() {
         Map<String, Object> param = new HashMap<>();
-        param.put("api_key", movieApi.getAPI_KEY());
+        param.put("api_key", movieApiConfig.getMovieApiProperties().getApiKey());
         HttpClientRequest request = new HttpClientRequest();
 
         Aggregation likeAggregation = Aggregation.newAggregation(
@@ -61,7 +61,7 @@ public class PlaylistServiceImpl implements PlaylistService{
                     List<String> imgPathList = new ArrayList<>();
                     List<Integer> movieIds = playlistLikeJoin.getMovieIds();
                     for(int movieId : movieIds){
-                        request.setUrl(String.format("%s/movie/%d/images", movieApi.getBASE_URL(), movieId));
+                        request.setUrl(String.format("%s/movie/%d/images", movieApiConfig.getMovieApiProperties().getBaseUrl(), movieId));
                         request.setData(param);
                         try {
                             Map<String, Object> response = om.readValue(HttpClient.get(request), HashMap.class);
@@ -72,7 +72,7 @@ public class PlaylistServiceImpl implements PlaylistService{
                                 continue;
                             }
                             List<Map<String, Object>> posterData = (List<Map<String, Object>>) response.get("posters");
-                            imgPathList.add(movieApi.getIMG_BASE_URL() + posterData.get(0).get("file_path").toString());
+                            imgPathList.add(movieApiConfig.getMovieApiProperties().getImgBaseUrl() + posterData.get(0).get("file_path").toString());
 
                         } catch (Exception e) {
                             log.error("movie not found error => {}", movieId);
