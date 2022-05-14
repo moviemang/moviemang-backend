@@ -7,15 +7,19 @@ import com.moviemang.coreutils.common.response.CommonResponse;
 import com.moviemang.coreutils.common.response.ErrorCode;
 import com.moviemang.coreutils.model.vo.HttpClientRequest;
 import com.moviemang.coreutils.utils.httpclient.HttpClient;
-import com.moviemang.datastore.config.MovieApiConfig;
+import com.moviemang.datastore.config.MovieApi;
 import com.moviemang.datastore.domain.PlaylistOrderByLikeDto;
+import com.moviemang.datastore.entity.mongo.Playlist;
 import com.moviemang.datastore.repository.maria.MemberRepository;
 import com.moviemang.datastore.repository.mongo.like.LikeRepository;
 import com.moviemang.datastore.repository.mongo.playlist.PlaylistRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.AggregationOperation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 
@@ -31,37 +35,56 @@ public class PlaylistServiceImpl implements PlaylistService{
     private LikeRepository likeRepository;
     private MemberRepository memberRepository;
     private ObjectMapper om;
-    private MovieApiConfig movieApiConfig;
+    private MovieApi movieApi;
 
     @Autowired
     public PlaylistServiceImpl(PlaylistRepository playlistRepository, LikeRepository likeRepository, MemberRepository memberRepository,
-                               MovieApiConfig movieApiConfig, ObjectMapper om){
+                               MovieApi movieApi, ObjectMapper om){
         this.playlistRepository = playlistRepository;
         this.likeRepository = likeRepository;
         this.memberRepository = memberRepository;
-        this.movieApiConfig = movieApiConfig;
+        this.movieApi = movieApi;
         this.om = om;
     }
 
     @Override
     public CommonResponse playlistOrderByLike() {
         Map<String, Object> param = new HashMap<>();
-        param.put("api_key", movieApiConfig.getMovieApiProperties().getApiKey());
+        param.put("api_key", movieApi.getAPI_KEY());
         HttpClientRequest request = new HttpClientRequest();
 
-        Aggregation likeAggregation = Aggregation.newAggregation(
-                Aggregation.match(Criteria.where("regDate").gte(LocalDate.now().minusDays(10))),
-                Aggregation.lookup("like", "_id", "targetId", "likes")
+        AggregationOperation lookupOperation = context -> new Document(
+                "$lookup",
+                new Document("from", "playlist")
+                        .append("let", new Document("targetId",  "$_id"))
+                        .append("pipeline", Collections.singletonList(new Document("$match", new Document("$expr", new Document("$and",
+                                Arrays.asList(
+                                        new Document("$eq", Arrays.asList("$_id", "$$targetId")),
+                                        new Document("$eq", Arrays.asList("$display", true))
+                                ))))
+                        ))
+                        .append("as","playlist")
         );
 
-        List<PlaylistOrderByLikeDto> filterByTypeAndGroupByTargetId = playlistRepository.playlistOrderByLike(likeAggregation, "playlist")
+        Aggregation likeAggregation = Aggregation.newAggregation(
+                Aggregation.project("targetId", "regDate", "likeType"),
+                Aggregation.match(Criteria.where("regDate").gte(LocalDate.now().minusDays(1)).and("likeType").is("M")),
+                Aggregation.group("targetId").count().as("likeCount"),
+                Aggregation.sort(Sort.Direction.DESC, "likeCount"),
+                Aggregation.limit(4),
+                lookupOperation,
+                Aggregation.match(Criteria.where("playlist").not().size(0))
+        );
+
+        List<PlaylistOrderByLikeDto> filterByTypeAndGroupByTargetId = likeRepository.filterByTypeAndGroupByTargetId(likeAggregation, "like")
                 .getMappedResults()
                 .stream()
                 .map( playlistLikeJoin -> {
+                    Playlist playlistInfo = playlistLikeJoin.getPlaylist().get(0);
                     List<String> imgPathList = new ArrayList<>();
-                    List<Integer> movieIds = playlistLikeJoin.getMovieIds();
+                    List<Integer> movieIds = playlistInfo.getMovieIds();
                     for(int movieId : movieIds){
-                        request.setUrl(String.format("%s/movie/%d/images", movieApiConfig.getMovieApiProperties().getBaseUrl(), movieId));
+                        request.setUrl(String.format("%s/movie/%d/images", movieApi.getBASE_URL(), movieId));
                         request.setData(param);
                         try {
                             Map<String, Object> response = om.readValue(HttpClient.get(request), HashMap.class);
@@ -72,38 +95,25 @@ public class PlaylistServiceImpl implements PlaylistService{
                                 continue;
                             }
                             List<Map<String, Object>> posterData = (List<Map<String, Object>>) response.get("posters");
-                            imgPathList.add(movieApiConfig.getMovieApiProperties().getImgBaseUrl() + posterData.get(0).get("file_path").toString());
+                            imgPathList.add(movieApi.getIMG_BASE_URL() + posterData.get(0).get("file_path").toString());
 
                         } catch (Exception e) {
-                            log.error("movie not found error => {}", movieId);
-                            throw new BaseException(ErrorCode.NOT_FOUND_MOVIE);
+                            throw new BaseException(ErrorCode.COMMON_SYSTEM_ERROR);
                         }
                     }
 
                     return PlaylistOrderByLikeDto.builder()
-                            ._id(playlistLikeJoin.get_id())
-                            .playlistTitle(playlistLikeJoin.getPlaylistTitle())
-                            .memberName(memberRepository.findByMemberId(playlistLikeJoin.getMemberId())
+                            ._id(playlistInfo.get_id())
+                            .playlistTitle(playlistInfo.getPlaylistTitle())
+                            .memberName(memberRepository.findByMemberId(playlistInfo.getMemberId())
                                     .orElseThrow(() -> new BaseException(ErrorCode.USER_NOT_FOUND))
                                     .getMemberName())
                             .representativeImagePath(imgPathList)
-                            .tags(playlistLikeJoin.getTags())
-                            .movieCount(playlistLikeJoin.getMovieIds().size())
-                            .likeCount(playlistLikeJoin.getLikes().size())
+                            .tags(playlistInfo.getTags())
+                            .movieCount(playlistInfo.getMovieIds().size())
+                            .likeCount(playlistLikeJoin.getLikeCount())
                             .build();
                 })
-                .sorted(new Comparator<PlaylistOrderByLikeDto>() {
-                    @Override
-                    public int compare(PlaylistOrderByLikeDto dto1, PlaylistOrderByLikeDto dto2) {
-                        if(dto1.getLikeCount() < dto2.getLikeCount()){
-                            return 1;
-                        }
-                        else{
-                            return -1;
-                        }
-                    }
-                })
-                .limit(4)
                 .collect(Collectors.toList());
 
         return CommonResponse.success(filterByTypeAndGroupByTargetId);
