@@ -6,5 +6,5 @@ import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 
 public interface CustomizedLikeRepository {
 
-    AggregationResults<PlaylistLikeJoin> filterByTypeAndGroupByTargetId(Aggregation likeAggregation, String collection);
+    AggregationResults<PlaylistLikeJoin> findTop2ByMemberIdOrderByRegDateDesc(Aggregation likeAggregation, String collection);
 }

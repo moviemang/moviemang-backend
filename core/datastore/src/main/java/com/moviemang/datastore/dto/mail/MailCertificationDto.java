@@ -1,4 +1,4 @@
-package com.moviemang.datastore.dto;
+package com.moviemang.datastore.dto.mail;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
