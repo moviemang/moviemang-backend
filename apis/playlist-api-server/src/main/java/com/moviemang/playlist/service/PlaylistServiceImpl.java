@@ -50,7 +50,7 @@ public class PlaylistServiceImpl implements PlaylistService{
         HttpClientRequest request = new HttpClientRequest();
 
         Aggregation likeAggregation = Aggregation.newAggregation(
-                Aggregation.match(Criteria.where("regDate").gte(LocalDate.now().minusDays(10))),
+                Aggregation.match(Criteria.where("regDate").gte(LocalDate.now().minusDays(1))),
                 Aggregation.lookup("like", "_id", "targetId", "likes")
         );
 
@@ -92,17 +92,7 @@ public class PlaylistServiceImpl implements PlaylistService{
                             .likeCount(playlistLikeJoin.getLikes().size())
                             .build();
                 })
-                .sorted(new Comparator<PlaylistOrderByLikeDto>() {
-                    @Override
-                    public int compare(PlaylistOrderByLikeDto dto1, PlaylistOrderByLikeDto dto2) {
-                        if(dto1.getLikeCount() < dto2.getLikeCount()){
-                            return 1;
-                        }
-                        else{
-                            return -1;
-                        }
-                    }
-                })
+                .sorted((o1, o2) -> Integer.compare(o2.getLikeCount(), o1.getLikeCount()))
                 .limit(4)
                 .collect(Collectors.toList());
 
