@@ -2,15 +2,22 @@ package com.moviemang.member.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.moviemang.coreutils.common.response.CommonResponse;
-import com.moviemang.datastore.dto.mail.MailCertificationDto;
+import com.moviemang.datastore.dto.MailCertificationDto;
 import com.moviemang.datastore.dto.member.MemberJoinDto;
 import com.moviemang.member.domain.DeletedMember;
 import com.moviemang.member.service.MemberService;
 import com.moviemang.security.uitls.AuthenticationUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.Errors;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
