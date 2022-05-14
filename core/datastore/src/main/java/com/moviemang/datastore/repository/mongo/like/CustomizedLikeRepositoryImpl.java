@@ -14,7 +14,7 @@ public class CustomizedLikeRepositoryImpl implements CustomizedLikeRepository {
     }
 
     @Override
-    public AggregationResults<PlaylistLikeJoin> findTop2ByMemberIdOrderByRegDateDesc(Aggregation likeAggregation, String collection) {
+    public AggregationResults<PlaylistLikeJoin> filterByTypeAndGroupByTargetId(Aggregation likeAggregation, String collection) {
         return mongoTemplate.aggregate(likeAggregation, collection, PlaylistLikeJoin.class);
     }
 }

@@ -1,17 +1,15 @@
 package com.moviemang.datastore.config;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
 
 @Configuration
-@PropertySource(value = "classpath:movie/movieApi.yml", factory = YamlPropertySourceFactory.class)
 public class MovieApiConfig {
     @Bean
-    @ConfigurationProperties(prefix = "movie")
-    public MovieApi getMovieApiProperties(){
-        return new MovieApi();
+    public MovieApi MovieApi(@Value("${movie.api-key}") String API_KEY, @Value("${movie.base-url}") String BASE_URL,
+                             @Value("${movie.img-url}") String IMG_BASE_URL){
+        return new MovieApi(API_KEY, BASE_URL, IMG_BASE_URL);
     }
 
 }

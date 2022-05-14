@@ -39,10 +39,6 @@ allprojects {
         /* lombok */
         compileOnly 'org.projectlombok:lombok'
         annotationProcessor 'org.projectlombok:lombok'
-
-        /* Test 코드에서 롬복 사용을 위해서 정의 */
-        testCompileOnly 'org.projectlombok:lombok'
-        testAnnotationProcessor 'org.projectlombok:lombok'
 		
         /* RestDocs */
         testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
