@@ -1,10 +1,20 @@
 spring:
   profiles:
     active: local
-movie:
-  api-key: cbfa45007409cc068286bfeafd12a530
-  base-url: https://api.themoviedb.org/3/
-  img-url: https://image.tmdb.org/t/p/w500
+  mail:
+    host: smtp.gmail.com
+    port: 465
+    username: moviemang2@gmail.com
+    password: jzmljjxrbvvqgqyq
+    default-encoding: UTF-8
+    protocol: smtps
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
 ---
 spring:
   config:
