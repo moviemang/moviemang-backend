@@ -1,3 +1,0 @@
-##각 환경에 맞는 url을 설정해야합니다
-mongodb:
-  connectionString: mongodb://moviemang:moviemang@ec2-3-35-233-96.ap-northeast-2.compute.amazonaws.com:27017/admin

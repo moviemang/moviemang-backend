@@ -56,12 +56,12 @@ public class MemberController {
         authenticationUtil.checkAuthenticationInfo(httpServletRequest, deletedMember);
         return memberService.deleteMember(deletedMember);
     }
-	@PostMapping(path = "/email/certification")
+	@PostMapping(path = "/certificationCheck")
     public CommonResponse checkCertification(@RequestBody MailCertificationDto certificationDto){
     	return memberService.checkMailCertification(certificationDto);
     }
 
-    @PostMapping(path = "/email")
+    @PostMapping(path = "/certificationSend")
     public CommonResponse sendMailCertification(@RequestBody String email) throws JsonProcessingException {
         return memberService.sendCertificationMail(email);
     }
