@@ -2,7 +2,7 @@ package com.moviemang.member.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.moviemang.coreutils.common.response.CommonResponse;
-import com.moviemang.datastore.dto.MailCertificationDto;
+import com.moviemang.datastore.dto.mail.MailCertificationDto;
 import com.moviemang.datastore.dto.member.MemberJoinDto;
 import com.moviemang.member.domain.DeletedMember;
 
