@@ -8,6 +8,10 @@ import org.springframework.data.mongodb.MongoDatabaseFactory;
 import org.springframework.data.mongodb.config.EnableMongoAuditing;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.SimpleMongoClientDatabaseFactory;
+import org.springframework.data.mongodb.core.convert.DefaultDbRefResolver;
+import org.springframework.data.mongodb.core.convert.DefaultMongoTypeMapper;
+import org.springframework.data.mongodb.core.convert.MappingMongoConverter;
+import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
 @Configuration
@@ -28,8 +32,16 @@ public class MongoConfig {
     }
 
     @Bean
+    public MappingMongoConverter mongoConverter() {
+        MappingMongoConverter converter = new MappingMongoConverter(new DefaultDbRefResolver(mongoDatabaseFactory()), new MongoMappingContext());
+        // 핵심은 이 부분으로, '_class' 필드를 제거하는 설정이다.
+        converter.setTypeMapper(new DefaultMongoTypeMapper(null));
+        return converter;
+    }
+
+    @Bean
     public MongoTemplate mongoTemplate() {
-        return new MongoTemplate(mongoDatabaseFactory());
+        return new MongoTemplate(mongoDatabaseFactory(), mongoConverter());
     }
 
 }
