@@ -29,7 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Slf4j
-@EnableJpaAuditing
+//@EnableJpaAuditing
 @Profile("local")
 //@AutoConfigureMockMvc
 @SpringBootTest
@@ -78,9 +78,9 @@ class MemberApiServerApplicationTests {
     void insertUser(){
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
         MemberJoinDto memberJoinDto = MemberJoinDto.builder()
-                .memberEmail("test4@gmail.com")
+                .memberEmail("test5@gmail.com")
                 .memberName("쿠1쿠2쿠3aa")
-                .memberPassword("test4")
+                .memberPassword("pass5")
                 .mailServiceUseYn("Y")
                 .build();
         memberService.regist(memberJoinDto);

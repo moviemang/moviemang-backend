@@ -1,6 +1,7 @@
 package com.moviemang.security.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.moviemang.coreutils.common.exception.AuthenticationException;
 import com.moviemang.coreutils.common.response.CommonResponse;
 import com.moviemang.coreutils.common.response.ErrorCode;
 import com.moviemang.coreutils.model.vo.CommonParam;
@@ -19,7 +20,6 @@ import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 
@@ -94,19 +94,24 @@ public class AuthenticationService {
         return refreshJwtToken;
     }
 
-    public static Authentication getAuthentication(HttpServletRequest request) {
-        String token = resolveToken(request);
-        if (token != null) {
-            String user = (String) Jwts.parser()
-                    .setSigningKey(SIGNINGKEY)
-                    .parseClaimsJws(token.replace(BEARER_PREFIX, ""))
-                    .getBody()
-                    .get("username");
+    public static Authentication getAuthentication(HttpServletRequest request){
 
-            if (user != null && StringUtils.isNoneEmpty(user)) {
-                return new UsernamePasswordAuthenticationToken(user, null, emptyList());
-            } else {
-                throw new RuntimeException("Authentication failed");
+        String token = resolveToken(request);
+        String user = "";
+        if (token != null) {
+            try {
+                user = (String) Jwts.parser()
+                        .setSigningKey(SIGNINGKEY)
+                        .parseClaimsJws(token.replace(BEARER_PREFIX, ""))
+                        .getBody()
+                        .get("username");
+                if (user != null && StringUtils.isNoneEmpty(user)) {
+                    return new UsernamePasswordAuthenticationToken(user, null, emptyList());
+                } else {
+                    throw new AuthenticationServiceException("Authentication failed");
+                }
+            }catch (Exception e){
+                throw new AuthenticationServiceException(ErrorCode.AUTH_INVALID_JWT.getErrorMsg());
             }
         }
         return null;
