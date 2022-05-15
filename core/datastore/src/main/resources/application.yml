@@ -1,19 +1,17 @@
 spring:
-#  data:
-#    mongodb:
-#        host: localhost
-#        port: 27017
-#        database: moviemang
-#        username: moviemang
-#        password: moviemang-pass
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      database: moviemang
+      username: root
+      password: root-pass
   jpa:
     open-in-view: false
     generate-ddl: true
     show-sql: true
     hibernate:
       ddl-auto: none
-      naming:
-        physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
     properties:
       format_sql: true
 management:
@@ -24,13 +22,17 @@ management:
   endpoints:
     web:
       cors:
-        allowed-methods: *
+        allowed-methods: '*'
       exposure:
         include: '*'
   health:
     diskspace:
       enabled: true
+
 movie:
   api-key: cbfa45007409cc068286bfeafd12a530
   base-url : https://api.themoviedb.org/3/
-  img-url: https://image.tmdb.org/t/p/w500
+  img-base-url: https://image.tmdb.org/t/p/w500
+
+
+

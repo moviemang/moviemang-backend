@@ -13,8 +13,7 @@ import java.util.List;
 @Repository
 public interface PlaylistRepository extends MongoRepository<Playlist, ObjectId>, CustomizedPlaylistRepository {
 
-    PlayListOrderByLikeDto findPlayListDtoBy_id(ObjectId id);
+    List<Playlist> findTop2ByMemberIdOrderByRegDateDesc(long l);
     List<Playlist> findByMemberId(Long memberId, Pageable pageRequest);
-//    List<Playlist> findByMemberIdOrderByRegDate(Long memberId, Pageable pageRequest);
 
 }

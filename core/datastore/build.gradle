@@ -7,4 +7,5 @@ dependencies {
         implementation group: 'org.mongodb', name: 'mongodb-driver-reactivestreams', version: '4.6.0'
 
         implementation 'org.springframework.boot:spring-boot-starter-validation'
+        annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
 }

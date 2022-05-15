@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: dev
+    active: local
   mail:
     host: smtp.gmail.com
     port: 465
@@ -14,10 +14,7 @@ spring:
           auth: true
           starttls:
             enable: true
-movie:
-  api-key: cbfa45007409cc068286bfeafd12a530
-  base-url: https://api.themoviedb.org/3/
-  img-url: https://image.tmdb.org/t/p/w500
+
 ---
 spring:
   config:

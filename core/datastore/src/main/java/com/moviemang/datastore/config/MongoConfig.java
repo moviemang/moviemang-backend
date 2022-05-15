@@ -1,49 +1,51 @@
 package com.moviemang.datastore.config;
 
-import com.mongodb.ConnectionString;
-import com.mongodb.MongoClientSettings;
-import com.mongodb.MongoCredential;
-import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoClients;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.mongodb.MongoDatabaseFactory;
-import org.springframework.data.mongodb.config.AbstractMongoClientConfiguration;
 import org.springframework.data.mongodb.config.EnableMongoAuditing;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.SimpleMongoClientDatabaseFactory;
+import org.springframework.data.mongodb.core.convert.DefaultDbRefResolver;
+import org.springframework.data.mongodb.core.convert.DefaultMongoTypeMapper;
+import org.springframework.data.mongodb.core.convert.MappingMongoConverter;
+import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
 @Configuration
-@EnableMongoRepositories(basePackages = "com.moviemang.datastore.repository.mongo", mongoTemplateRef = "mongoTemplate")
+@PropertySource(value = "classpath:${spring.profiles.active}/mongodb.yml", factory = YamlPropertySourceFactory.class)
+@EnableMongoRepositories(basePackages = "com.moviemang.datastore.repository.mongo")
 @EnableMongoAuditing
-public class MongoConfig extends AbstractMongoClientConfiguration {
+public class MongoConfig {
+
     @Bean
-    public MongoTemplate mongoTemplate(MongoClient mongoClient) {
-        MongoDatabaseFactory factory = new SimpleMongoClientDatabaseFactory(mongoClient, "moviemang");
-        return new MongoTemplate(factory);
+    @ConfigurationProperties(prefix = "mongodb")
+    public MongoProperties mongoProperties(){
+        return new MongoProperties();
     }
 
-    @Override
-    public MongoClient mongoClient() {
-        ConnectionString connectionString = new ConnectionString("mongodb://localhost:27017/moviemang");
-        MongoCredential mongoCredential = MongoCredential.createCredential(
-                                                    "moviemang",
-                                                    "moviemang",
-                                                    "moviemang-pass".toCharArray());
-
-        MongoClientSettings mongoClientSettings = MongoClientSettings.builder()
-                .applyConnectionString(connectionString)
-                .credential(mongoCredential)
-                .build();
-
-        return MongoClients.create(mongoClientSettings);
+    @Bean
+    public MongoDatabaseFactory mongoDatabaseFactory() {
+        return new SimpleMongoClientDatabaseFactory(mongoProperties().getConnectionString());
     }
 
-
-
-    @Override
-    protected String getDatabaseName() {
-        return "moviemang";
+    @Bean
+    public MappingMongoConverter mongoConverter() {
+        MappingMongoConverter converter = new MappingMongoConverter(new DefaultDbRefResolver(mongoDatabaseFactory()), new MongoMappingContext());
+        // 핵심은 이 부분으로, '_class' 필드를 제거하는 설정이다.
+        converter.setTypeMapper(new DefaultMongoTypeMapper(null));
+        return converter;
     }
+
+    @Bean
+    public MongoTemplate mongoTemplate() {
+        return new MongoTemplate(mongoDatabaseFactory(), mongoConverter());
+    }
+
 }
+
+
+
+

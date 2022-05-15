@@ -16,7 +16,7 @@ public class MailServiceUser extends BaseTimeEntity{
     private Long mailServiceId;
     @Column(name = "member_id")
     private Long memberId;
-    @Column(name = "mebmer_email")
+    @Column(name = "member_email")
     private String memberEmail;
     @Column(name = "content_type")
     private String contentType;
