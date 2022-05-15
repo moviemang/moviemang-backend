@@ -19,17 +19,17 @@ public class Playlist extends BaseTimeEntity {
     private Long memberId;
     private String playlistDescription;
     private List<Tag> tags;
-    private List<MovieInfo> movies;
+    private List<Integer> movieIds;
     private boolean display;
 
     @Builder
-    public Playlist(ObjectId _id, String playlistTitle, Long memberId, String playlistDescription, List<Tag> tags, List<MovieInfo> movies, boolean display) {
+    public Playlist(ObjectId _id, String playlistTitle, Long memberId, String playlistDescription, List<Tag> tags, List<Integer> movieIds, boolean display) {
         this._id = _id;
         this.playlistTitle = playlistTitle;
         this.memberId = memberId;
         this.playlistDescription = playlistDescription;
         this.tags = tags;
-        this.movies = movies;
+        this.movieIds = movieIds;
         this.display = display;
     }
 }
