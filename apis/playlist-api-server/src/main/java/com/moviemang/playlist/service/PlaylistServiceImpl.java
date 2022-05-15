@@ -52,9 +52,9 @@ public class PlaylistServiceImpl implements PlaylistService{
     private ObjectMapper objectMapper;
 
     @Autowired
-    public PlaylistServiceImpl(PlaylistRepository playlistRepository, LikeRepository likeRepository, MemberRepository memberRepository
-            , MovieApiConfig movieApiConfig, ObjectMapper objectMapper){
+    public PlaylistServiceImpl(PlaylistRepository playlistRepository, PlaylistMapper playlistMapper, LikeRepository likeRepository, MemberRepository memberRepository, MovieApiConfig movieApiConfig, ObjectMapper objectMapper) {
         this.playlistRepository = playlistRepository;
+        this.playlistMapper = playlistMapper;
         this.likeRepository = likeRepository;
         this.memberRepository = memberRepository;
         this.movieApiConfig = movieApiConfig;
