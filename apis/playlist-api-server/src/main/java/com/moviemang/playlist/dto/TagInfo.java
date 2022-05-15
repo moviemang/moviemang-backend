@@ -7,6 +7,6 @@ import org.bson.types.ObjectId;
 @Builder
 @ToString
 public class TagInfo {
-    private ObjectId id;
+    private String id;
     private String name;
 }

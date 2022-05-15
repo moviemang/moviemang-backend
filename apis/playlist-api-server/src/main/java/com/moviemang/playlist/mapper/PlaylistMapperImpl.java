@@ -67,7 +67,7 @@ public class PlaylistMapperImpl implements PlaylistMapper {
     public TagInfo of(Tag tag) {
         if (tag == null) return null;
         TagInfo.TagInfoBuilder tagInfo = TagInfo.builder();
-        tagInfo.id(tag.get_id());
+        tagInfo.id(tag.get_id().toHexString());
         tagInfo.name(tag.getTagName());
 
         return tagInfo.build();
