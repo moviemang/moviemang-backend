@@ -25,6 +25,5 @@ public class AuthenticationUtil {
                 param.setId(commonParam.getId());
             }
         }
-
     }
 }

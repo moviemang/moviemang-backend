@@ -14,7 +14,7 @@ import com.moviemang.datastore.entity.maria.Member;
 import com.moviemang.datastore.repository.maria.DeletedMemberRepository;
 import com.moviemang.datastore.repository.maria.MailCertificationRepository;
 import com.moviemang.datastore.repository.maria.MemberRepository;
-import com.moviemang.member.domain.DeletedMember;
+import com.moviemang.member.dto.DeletedMember;
 import com.moviemang.member.encrypt.CommonEncoder;
 import com.moviemang.member.util.CreateCertificationUtil;
 import com.moviemang.member.util.MailUtil;

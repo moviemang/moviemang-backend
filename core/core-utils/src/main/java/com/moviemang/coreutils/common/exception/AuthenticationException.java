@@ -1,8 +1,9 @@
 package com.moviemang.coreutils.common.exception;
 
 import com.moviemang.coreutils.common.response.ErrorCode;
+import lombok.Getter;
 
-
+@Getter
 public class AuthenticationException extends javax.security.sasl.AuthenticationException {
     private ErrorCode errorCode;
 

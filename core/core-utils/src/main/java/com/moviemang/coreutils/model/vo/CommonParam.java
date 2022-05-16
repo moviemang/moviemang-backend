@@ -3,9 +3,7 @@ package com.moviemang.coreutils.model.vo;
 import lombok.*;
 
 @ToString
-@Setter
-@Getter
-@Builder
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class CommonParam {

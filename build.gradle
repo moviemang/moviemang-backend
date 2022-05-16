@@ -56,6 +56,12 @@ allprojects {
 
         testImplementation group: 'junit', name: 'junit', version: '4.13.2'
         implementation('com.mashape.unirest:unirest-java:1.4.9')
+
+        implementation 'org.mapstruct:mapstruct:1.4.1.Final'
+        implementation 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
+        implementation "org.projectlombok:lombok:1.18.16"
+//        annotationProcessor "org.mapstruct:mapstruct-processor:1.4.1.Final"
+
     }
 }
 

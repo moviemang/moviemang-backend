@@ -10,6 +10,7 @@ public enum ErrorCode {
     COMMON_INVALID_PARAMETER("요청한 값이 올바르지 않습니다."),
     COMMON_ENTITY_NOT_FOUND("존재하지 않는 엔티티입니다."),
     COMMON_ILLEGAL_STATUS("잘못된 상태값입니다."),
+    COMMON_EMPTY_DATA("데이터가 존재하지 않습니다."),
 
     // Join CHECK Exception
     NICK_DUPLICATED("이미 사용중인 닉네임입니다."),
@@ -36,7 +37,11 @@ public enum ErrorCode {
 
     /* 영화 API 관련 Exception */
     INVALID_API_KEY("API키가 유효하지 않습니다."),
-    NOT_FOUND_MOVIE("해당 영화의 데이터가 존재하지 않습니다.");
+    NOT_FOUND_MOVIE("해당 영화의 데이터가 존재하지 않습니다."),
+
+    /* */
+    PLAYLIST_SAVE_FAIL("플레이리스트 생성 실패했습니다.")
+    ;
 
     private final String errorMsg;
 
