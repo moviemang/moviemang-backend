@@ -11,7 +11,6 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Generated;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @Generated(
@@ -53,7 +52,7 @@ public class PlaylistMapperImpl implements PlaylistMapper {
         return playlistInfos;
     }
 
-    protected List<TagInfo> tagInfos(List<Tag> tags){
+    public List<TagInfo> tagInfos(List<Tag> tags){
         List<TagInfo> tagInfos = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(tags)){
             for (Tag tag : tags){
