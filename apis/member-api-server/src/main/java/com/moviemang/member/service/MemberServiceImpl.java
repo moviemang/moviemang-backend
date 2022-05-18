@@ -15,7 +15,9 @@ import com.moviemang.datastore.repository.maria.DeletedMemberRepository;
 import com.moviemang.datastore.repository.maria.MailCertificationRepository;
 import com.moviemang.datastore.repository.maria.MemberRepository;
 import com.moviemang.member.dto.DeletedMember;
+import com.moviemang.member.dto.MemberInfo;
 import com.moviemang.member.encrypt.CommonEncoder;
+import com.moviemang.member.mapper.MemberMapper;
 import com.moviemang.member.util.CreateCertificationUtil;
 import com.moviemang.member.util.MailUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +29,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -41,17 +44,18 @@ public class MemberServiceImpl implements MemberService{
 	private MailUtil mailUtil;
 	private MailUserServiceImpl mailUserServiceImpl;
 	private ObjectMapper om;
+	private MemberMapper memberMapper;
 
 	@Autowired
-	public MemberServiceImpl(MailUtil mailUtil, MailCertificationRepository mailRepo,
-	 MemberRepository memberRepository, DeletedMemberRepository deletedMemberRepository, MailUserServiceImpl mailUserServiceImpl) {
+	public MemberServiceImpl(MemberRepository memberRepository, CommonEncoder commonEncoder, DeletedMemberRepository deletedMemberRepository, MailCertificationRepository mailRepo, MailUtil mailUtil, MailUserServiceImpl mailUserServiceImpl, ObjectMapper om, MemberMapper memberMapper) {
+		this.memberRepository = memberRepository;
+		this.commonEncoder = commonEncoder;
+		this.deletedMemberRepository = deletedMemberRepository;
 		this.mailRepo = mailRepo;
 		this.mailUtil = mailUtil;
-		this.memberRepository = memberRepository;
-		this.deletedMemberRepository = deletedMemberRepository;
-		this.commonEncoder = new CommonEncoder();
-		this.om = new ObjectMapper();
 		this.mailUserServiceImpl = mailUserServiceImpl;
+		this.om = om;
+		this.memberMapper = memberMapper;
 	}
 
 	/**
@@ -184,6 +188,12 @@ public class MemberServiceImpl implements MemberService{
 			return CommonResponse.fail(ErrorCode.MAIL_SYSTEM_ERROR);
 		}
 		return CommonResponse.success(null, "메일 발송 성공", HttpStatus.CREATED);
+	}
+
+	@Override
+	public List<MemberInfo> selectAllMembers() {
+		List<Member> members = memberRepository.findAll();
+		return memberMapper.of(members);
 	}
 
 	@SuppressWarnings("static-access")
