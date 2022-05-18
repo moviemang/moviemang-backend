@@ -2,7 +2,8 @@ dependencies {
     /* batch */
     implementation 'org.springframework.boot:spring-boot-starter-batch'
 	testImplementation 'org.springframework.batch:spring-batch-test'
-	
+	implementation 'org.springframework.boot:spring-boot-starter-quartz'
+
 	/* mail */
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
 }    	

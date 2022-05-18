@@ -108,3 +108,8 @@ project(':core:security'){
         implementation project(':core:core-utils')
     }
 }
+project(':batch'){
+    dependencies {
+        implementation project(':core:datastore')
+    }
+}
