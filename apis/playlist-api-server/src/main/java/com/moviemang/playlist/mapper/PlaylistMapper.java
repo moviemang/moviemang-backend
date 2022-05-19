@@ -30,4 +30,7 @@ public interface PlaylistMapper {
     @Mapping(source = "_id", target = "id" )
     @Mapping(source = "tagName", target = "name")
     TagInfo of(Tag tag);
+
+    List<TagInfo> tagInfos(List<Tag> tags);
+
 }
