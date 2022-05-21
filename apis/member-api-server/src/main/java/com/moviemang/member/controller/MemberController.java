@@ -21,7 +21,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 
 @Slf4j
-@CrossOrigin(origins = "*")
 @RequestMapping(path = "/member")
 @RestController
 public class MemberController {
