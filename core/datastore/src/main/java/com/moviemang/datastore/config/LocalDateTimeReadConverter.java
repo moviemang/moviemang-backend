@@ -5,24 +5,18 @@ import org.springframework.data.convert.ReadingConverter;
 import org.springframework.lang.Nullable;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 
 @ReadingConverter
-public class LocalDateTimeReadConverter implements Converter<LocalDateTime, LocalDateTime> {
-
-//    @Override
-//    public ZonedDateTime convert(@Nullable Document document) {
-//        if (document == null) return null;
-//
-//        Date dateTime = document.getDate(LocalDateTimeWriteConverter.DATE_TIME);
-//        String zoneId = document.getString(LocalDateTimeWriteConverter.ZONE);
-//        ZoneId zone = ZoneId.of(zoneId);
-//
-//        return ZonedDateTime.ofInstant(dateTime.toInstant(), zone);
-//    }
+public class LocalDateTimeReadConverter implements Converter<Date, LocalDateTime> {
 
     @Override
-    public LocalDateTime convert(@Nullable LocalDateTime localDateTime) {
-        if (localDateTime == null) return null;
-        return localDateTime.minusHours(9);
+    public LocalDateTime convert(@Nullable Date date) {
+        if (date == null) return null;
+        return date.toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDateTime().minusHours(9);
+
     }
 }

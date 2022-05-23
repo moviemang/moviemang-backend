@@ -5,27 +5,18 @@ import org.springframework.data.convert.WritingConverter;
 import org.springframework.lang.Nullable;
 
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
+import java.util.Date;
 
 @WritingConverter
-public class LocalDateTimeWriteConverter implements Converter<LocalDateTime, LocalDateTime> {
-    static final String DATE_TIME = "dateTime";
-    static final String ZONE = "zone";
-
-//    @Override
-//    public Document convert(@Nullable ZonedDateTime zonedDateTime) {
-//        if (zonedDateTime == null) return null;
-//
-//        Document document = new Document();
-//        document.put(DATE_TIME, Date.from(zonedDateTime.plus(9, ChronoUnit.HOURS).toInstant()));
-//        document.put(ZONE, zonedDateTime.getZone().getId());
-//        document.put("offset", zonedDateTime.getOffset().toString());
-//        return document;
-//    }
+public class LocalDateTimeWriteConverter implements Converter<LocalDateTime, Date> {
 
     @Override
-    public LocalDateTime convert(@Nullable LocalDateTime localDateTime) {
+    public Date convert(@Nullable LocalDateTime localDateTime) {
         if (localDateTime == null) return null;
-        return localDateTime.plus(9, ChronoUnit.HOURS);
+        return Date.from(localDateTime
+                .plus(9, ChronoUnit.HOURS)
+                .toInstant(ZoneOffset.of("+09:00")));
     }
 }
