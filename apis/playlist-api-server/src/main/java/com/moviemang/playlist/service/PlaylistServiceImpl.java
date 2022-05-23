@@ -95,8 +95,8 @@ public class PlaylistServiceImpl implements PlaylistService{
 
         Aggregation filterByRegDateAndSorting = Aggregation.newAggregation(
                 Aggregation.match(Criteria.where("curRegDate")
-                        .gte(LocalDateTime.parse(LocalDateTime.now().minusDays(20).format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'00:00:00.000", Locale.KOREA))))
-                        .lte(LocalDateTime.parse(LocalDateTime.now().minusDays(20).format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'23:59:59.999", Locale.KOREA))))
+                        .gte(LocalDateTime.parse(LocalDateTime.now().minusDays(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'00:00:00.000", Locale.KOREA))))
+                        .lte(LocalDateTime.parse(LocalDateTime.now().minusDays(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'23:59:59.999", Locale.KOREA))))
                 ),
                 Aggregation.sort(Sort.Direction.DESC, "likeCount").and(Sort.Direction.DESC, "curRegDate")
         );
