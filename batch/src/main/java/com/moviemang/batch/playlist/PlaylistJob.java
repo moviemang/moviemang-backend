@@ -79,8 +79,8 @@ public class PlaylistJob {
     public MongoItemReader<Like> filteringLike() {
         Query query = new Query()
                 .addCriteria(Criteria.where("regDate")
-                        .gte(LocalDateTime.now().minusDays(20).format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'00:00:00.000", Locale.KOREA)))
-                        .lte(LocalDateTime.now().minusDays(20).format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'23:59:59.000", Locale.KOREA)))
+                        .gte(LocalDateTime.now().minusDays(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'00:00:00.000", Locale.KOREA)))
+                        .lte(LocalDateTime.now().minusDays(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'23:59:59.000", Locale.KOREA)))
                 );
 
         MongoItemReader<Like> itemReader = new MongoItemReader();
@@ -125,8 +125,8 @@ public class PlaylistJob {
 
             Aggregation likeAggregation = Aggregation.newAggregation(
                     Aggregation.match(Criteria.where("regDate")
-                            .gte(LocalDateTime.parse(LocalDateTime.now().minusDays(20).format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'00:00:00.000", Locale.KOREA))))
-                            .lte(LocalDateTime.parse(LocalDateTime.now().minusDays(20).format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'23:59:59.000", Locale.KOREA))))
+                            .gte(LocalDateTime.parse(LocalDateTime.now().minusDays(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'00:00:00.000", Locale.KOREA))))
+                            .lte(LocalDateTime.parse(LocalDateTime.now().minusDays(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'23:59:59.000", Locale.KOREA))))
                     ),
                     Aggregation.group("targetId")
                             .count().as("likeCount")
