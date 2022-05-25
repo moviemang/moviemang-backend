@@ -105,6 +105,7 @@ public class PlaylistServiceImpl implements PlaylistService{
                 .getMappedResults()
                 .stream()
                 .map(data -> imgRequestUtil.requestImgPathForBatch(request, param, data))
+                .limit(4)
                 .collect(Collectors.toList()));
     }
 

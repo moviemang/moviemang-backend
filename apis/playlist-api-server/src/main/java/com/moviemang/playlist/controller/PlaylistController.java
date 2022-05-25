@@ -29,13 +29,6 @@ public class PlaylistController {
         this.authenticationUtil = authenticationUtil;
     }
 
-//    @GetMapping("/test")
-//    public void getTest(HttpServletRequest httpServletRequest, Playlist.Request request){
-//        authenticationUtil.checkAuthenticationInfo(httpServletRequest, request);
-//        System.out.println(request.getEmail());
-//        System.out.println(request.getId());
-//    }
-
     @GetMapping("/me")
     public CommonResponse myPlaylist(HttpServletRequest httpServletRequest,
                                      @PageableDefault(page = 1, size = 20) Pageable pageRequest, MyPlaylist.Request request){
