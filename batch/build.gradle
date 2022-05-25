@@ -5,4 +5,7 @@ dependencies {
 	
 	/* mail */
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
+
+	/*  MongoDB */
+	implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
 }    	

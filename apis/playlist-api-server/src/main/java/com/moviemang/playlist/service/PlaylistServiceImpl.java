@@ -17,13 +17,16 @@ import com.moviemang.playlist.util.ImgRequestUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -86,26 +89,24 @@ public class PlaylistServiceImpl implements PlaylistService{
     }
 
     @Override
-    public CommonResponse playlistOrderByLike() {
+    public CommonResponse<List<PlaylistInfo>> playlistOrderByLikeCount() {
         HttpClientRequest request = new HttpClientRequest();
         Map<String, Object> param = Maps.newHashMap();
-        param.put("api_key", movieApiConfig.getMovieApiProperties().getApiKey());
-        request.setData(param);
 
-        Aggregation likeAggregation = Aggregation.newAggregation(
-                Aggregation.match(Criteria.where("regDate").gte(LocalDate.now().minusDays(1))),
-                Aggregation.lookup("like", "_id", "targetId", "likes"),
-                Aggregation.match(Criteria.where("display").is(true).and("movieIds").not().size(0))
+        Aggregation filterByRegDateAndSorting = Aggregation.newAggregation(
+                Aggregation.match(Criteria.where("curRegDate")
+                        .gte(LocalDateTime.parse(LocalDateTime.now().minusDays(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'00:00:00.000", Locale.KOREA))))
+                        .lte(LocalDateTime.parse(LocalDateTime.now().minusDays(1).format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'23:59:59.999", Locale.KOREA))))
+                ),
+                Aggregation.sort(Sort.Direction.DESC, "likeCount").and(Sort.Direction.DESC, "curRegDate")
         );
 
-        List<PlaylistInfo> filterByTypeAndGroupByTargetId = playlistRepository.playlistOrderByLike(likeAggregation, "playlist")
+        return CommonResponse.success(playlistRepository.playlistOrderByLikeCount(filterByRegDateAndSorting, "playlistWithPrevLikeCount")
                 .getMappedResults()
                 .stream()
-                .map( playlistLikeJoin -> imgRequestUtil.requestImgPath(movieApiConfig, request, playlistLikeJoin))
-                .sorted((p1, p2) -> Long.compare(p2.getLikeCount(), p1.getLikeCount()))
+                .map(data -> imgRequestUtil.requestImgPathForBatch(request, param, data))
                 .limit(4)
-                .collect(Collectors.toList());
-
-        return CommonResponse.success(filterByTypeAndGroupByTargetId);
+                .collect(Collectors.toList()));
     }
+
 }
