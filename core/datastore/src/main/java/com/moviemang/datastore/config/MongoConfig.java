@@ -11,13 +11,16 @@ import org.springframework.data.mongodb.core.SimpleMongoClientDatabaseFactory;
 import org.springframework.data.mongodb.core.convert.DefaultDbRefResolver;
 import org.springframework.data.mongodb.core.convert.DefaultMongoTypeMapper;
 import org.springframework.data.mongodb.core.convert.MappingMongoConverter;
+import org.springframework.data.mongodb.core.convert.MongoCustomConversions;
 import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
+
+import java.util.Arrays;
 
 @Configuration
 @PropertySource(value = "classpath:${spring.profiles.active}/mongodb.yml", factory = YamlPropertySourceFactory.class)
 @EnableMongoRepositories(basePackages = "com.moviemang.datastore.repository.mongo")
-@EnableMongoAuditing
+@EnableMongoAuditing(dateTimeProviderRef = "dateTimeProvider")
 public class MongoConfig {
 
     @Bean
@@ -33,9 +36,15 @@ public class MongoConfig {
 
     @Bean
     public MappingMongoConverter mongoConverter() {
-        MappingMongoConverter converter = new MappingMongoConverter(new DefaultDbRefResolver(mongoDatabaseFactory()), new MongoMappingContext());
-        // 핵심은 이 부분으로, '_class' 필드를 제거하는 설정이다.
+        MappingMongoConverter converter = new MappingMongoConverter(
+                new DefaultDbRefResolver(mongoDatabaseFactory()),
+                new MongoMappingContext());
+        MongoCustomConversions conversions = new MongoCustomConversions(Arrays.asList(
+                new LocalDateTimeReadConverter(),
+                new LocalDateTimeWriteConverter()
+        ));
         converter.setTypeMapper(new DefaultMongoTypeMapper(null));
+        converter.setCustomConversions(conversions);
         return converter;
     }
 

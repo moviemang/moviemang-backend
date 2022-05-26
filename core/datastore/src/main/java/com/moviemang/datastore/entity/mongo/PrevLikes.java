@@ -5,25 +5,23 @@ import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.persistence.Id;
+import java.time.LocalDateTime;
 
 @Getter
-@Setter
 @ToString
-@Document(collection = "like")
+@Document(collection = "prevLikes")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Like extends MongoBaseTimeEntity {
+public class PrevLikes {
+
     @Id
     private ObjectId _id;
-    private int memberId;
     private ObjectId targetId;
-    private String likeType;
+    private LocalDateTime regDate;
 
     @Builder
-    public Like(ObjectId _id, int memberId, ObjectId targetId, String likeType
-            ) {
+    public PrevLikes(ObjectId _id, ObjectId targetId, LocalDateTime regDate) {
         this._id = _id;
-        this.memberId = memberId;
         this.targetId = targetId;
-        this.likeType = likeType;
+        this.regDate = regDate;
     }
 }
