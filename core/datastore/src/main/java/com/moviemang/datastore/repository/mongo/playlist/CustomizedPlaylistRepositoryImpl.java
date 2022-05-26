@@ -17,4 +17,9 @@ public class CustomizedPlaylistRepositoryImpl implements CustomizedPlaylistRepos
     public AggregationResults<PlaylistWithPrevLikeCount> playlistOrderByLikeCount(Aggregation aggregation, String collection) {
         return mongoTemplate.aggregate(aggregation, collection, PlaylistWithPrevLikeCount.class);
     }
+
+    @Override
+    public AggregationResults<PlaylistAggregationResult> lastestPlaylist(Aggregation aggregation, String collection) {
+        return mongoTemplate.aggregate(aggregation, collection, PlaylistAggregationResult.class);
+    }
 }

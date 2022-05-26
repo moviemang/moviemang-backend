@@ -1,6 +1,7 @@
 package com.moviemang.playlist.controller;
 
 import com.moviemang.coreutils.common.response.CommonResponse;
+import com.moviemang.coreutils.model.vo.CommonParam;
 import com.moviemang.playlist.dto.MyPlaylist;
 import com.moviemang.playlist.dto.Playlist;
 import com.moviemang.playlist.dto.PlaylistInfo;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.security.Principal;
 
 @Slf4j
 @RequestMapping(path = "/playlist")
@@ -29,6 +31,16 @@ public class PlaylistController {
         this.authenticationUtil = authenticationUtil;
     }
 
+//    @GetMapping("/test")
+//    public void getTest(HttpServletRequest httpServletRequest, Playlist.Request request){
+//        authenticationUtil.checkAuthenticationInfo(httpServletRequest, request);
+//        System.out.println(request.getEmail());
+//        System.out.println(request.getId());
+//    }
+    @GetMapping("/")
+    public CommonResponse mainPlaylist(@PageableDefault(page = 1, size = 4) Pageable pageRequest) {
+        return playlistService.lastestPlaylist(pageRequest);
+    }
     @GetMapping("/me")
     public CommonResponse myPlaylist(HttpServletRequest httpServletRequest,
                                      @PageableDefault(page = 1, size = 20) Pageable pageRequest, MyPlaylist.Request request){
@@ -48,6 +60,5 @@ public class PlaylistController {
     public CommonResponse<List<PlaylistInfo>> playlistOrderByLikeCount(){
         return playlistService.playlistOrderByLikeCount();
     }
-
 
 }
