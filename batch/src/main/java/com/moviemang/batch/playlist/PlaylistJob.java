@@ -97,7 +97,6 @@ public class PlaylistJob {
     @StepScope
     public ItemProcessor<Like, PrevLikes> changeToData(){
         return item -> {
-            log.info("필터링 전 Like => {}", item.toString());
             return PrevLikes.builder()
                     ._id(item.get_id())
                     .targetId(item.getTargetId())
@@ -111,7 +110,6 @@ public class PlaylistJob {
     public ItemWriter<PrevLikes> playlistWriter() {
         return items -> {
             for(PrevLikes item : items){
-                log.info("item ==> {}", item.toString());
                 mongoTemplate.save(item);
             }
         };
