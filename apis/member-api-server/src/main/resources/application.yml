@@ -1,6 +1,4 @@
 spring:
-  profiles:
-    active: local
   mail:
     host: smtp.gmail.com
     port: 465
@@ -15,6 +13,9 @@ spring:
           starttls:
             enable: true
 
+server:
+  port: 8080
+
 ---
 spring:
   config:
@@ -27,8 +28,6 @@ spring:
         physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
     show-sql: true
 
-server:
-  port: 8080
 ---
 spring:
   config:
@@ -41,8 +40,6 @@ spring:
         physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
     show-sql: true
 
-server:
-  port: 8080
 ---
 spring:
   config:
@@ -55,8 +52,6 @@ spring:
         physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
     show-sql: true
 
-server:
-  port: 8080
 
 
 
