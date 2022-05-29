@@ -5,6 +5,7 @@ import com.moviemang.coreutils.common.response.CommonResponse;
 import com.moviemang.datastore.dto.mail.MailCertificationDto;
 import com.moviemang.datastore.dto.member.MemberJoinDto;
 import com.moviemang.member.dto.DeletedMember;
+import com.moviemang.member.dto.MyPage;
 
 
 @SuppressWarnings("rawtypes")
@@ -15,4 +16,5 @@ public interface MemberService {
     public CommonResponse checkNick(String nick);
     public CommonResponse deleteMember(DeletedMember deletedMember);
     CommonResponse sendCertificationMail(String email) throws JsonProcessingException;
+    CommonResponse myInfo(MyPage.Request request);
 }

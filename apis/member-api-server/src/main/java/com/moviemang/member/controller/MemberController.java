@@ -5,6 +5,7 @@ import com.moviemang.coreutils.common.response.CommonResponse;
 import com.moviemang.datastore.dto.mail.MailCertificationDto;
 import com.moviemang.datastore.dto.member.MemberJoinDto;
 import com.moviemang.member.dto.DeletedMember;
+import com.moviemang.member.dto.MyPage;
 import com.moviemang.member.service.MemberService;
 import com.moviemang.security.uitls.AuthenticationUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -57,5 +58,11 @@ public class MemberController {
     @PostMapping(path = "/email")
     public CommonResponse sendMailCertification(@RequestBody String email) throws JsonProcessingException {
         return memberService.sendCertificationMail(email);
+    }
+
+    @GetMapping(path = "/myInfo")
+    public CommonResponse myInfo(HttpServletRequest httpServletRequest, MyPage.Request request){
+        authenticationUtil.checkAuthenticationInfo(httpServletRequest, request);
+        return memberService.myInfo(request);
     }
 }
