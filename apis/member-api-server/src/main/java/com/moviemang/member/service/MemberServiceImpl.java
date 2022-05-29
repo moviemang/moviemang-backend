@@ -239,6 +239,7 @@ public class MemberServiceImpl implements MemberService{
 				throw new BaseException(ErrorCode.USER_NOT_FOUND);
 			}
 			else{
+				myPageInfo.id(request.getId());
 				myPageInfo.nickname(member.getMemberName());
 			}
 		} catch (Exception e){
