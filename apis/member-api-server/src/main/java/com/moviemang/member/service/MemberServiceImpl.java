@@ -51,7 +51,8 @@ public class MemberServiceImpl implements MemberService{
 	private MemberMapper memberMapper;
 
 	@Autowired
-	public MemberServiceImpl(MemberRepository memberRepository, CommonEncoder commonEncoder, DeletedMemberRepository deletedMemberRepository, MailCertificationRepository mailRepo, MailUtil mailUtil, MailUserServiceImpl mailUserServiceImpl, ObjectMapper om, MemberMapper memberMapper) {
+	public MemberServiceImpl(MemberRepository memberRepository, CommonEncoder commonEncoder, DeletedMemberRepository deletedMemberRepository, MailCertificationRepository mailRepo
+			, MailUtil mailUtil, MailUserServiceImpl mailUserServiceImpl, ObjectMapper om, MemberMapper memberMapper, MailUserRepository mailUserRepository) {
 		this.memberRepository = memberRepository;
 		this.commonEncoder = commonEncoder;
 		this.deletedMemberRepository = deletedMemberRepository;
@@ -60,6 +61,7 @@ public class MemberServiceImpl implements MemberService{
 		this.mailUserServiceImpl = mailUserServiceImpl;
 		this.om = om;
 		this.memberMapper = memberMapper;
+		this.mailUserRepository = mailUserRepository;
 	}
 
 	/**
@@ -245,5 +247,88 @@ public class MemberServiceImpl implements MemberService{
 		}
 
 		return CommonResponse.success(myPageInfo.build());
+	}
+
+	@Override
+	public CommonResponse changeName(MyPage.Request request, String nickname) throws JsonProcessingException {
+		Map<String, String> bodyMap = om.readValue(nickname, Map.class);
+		String extractName = bodyMap.get("nickname");
+
+		if(StringUtils.isEmpty(extractName)){
+			return CommonResponse.fail(ErrorCode.COMMON_INVALID_PARAMETER);
+		}
+
+		int duplicatedUser = memberRepository.countMemberByMemberName(extractName);
+		if(duplicatedUser != 0){
+			return CommonResponse.fail(ErrorCode.NICK_DUPLICATED);
+		}
+
+		Member member = memberRepository.findByMemberId(request.getId()).orElse(null);
+		if(member == null){
+			throw new BaseException(ErrorCode.USER_NOT_FOUND);
+		}
+		member.setMemberName(extractName);
+
+		try{
+			memberRepository.save(member);
+		} catch (BaseException e){
+			log.error(e.getMessage());
+			throw new BaseException(ErrorCode.COMMON_SYSTEM_ERROR);
+		}
+
+		return CommonResponse.success(null, "닉네임 변경 성공");
+	}
+
+	@Override
+	public CommonResponse changeMailService(MyPage.Request request, String mailServiceUseYn) throws JsonProcessingException {
+		Map<String, String> bodyMap = om.readValue(mailServiceUseYn, Map.class);
+		String extractUseYn = bodyMap.get("mailServiceUseYn");
+
+		try{
+			MailServiceUser mailServiceUser = mailUserRepository.findByMemberId(request.getId()).orElse(null);
+			if(StringUtils.equals(extractUseYn, "Y")){
+					mailUserRepository.save(MailServiceUser.builder()
+							.memberId(request.getId())
+							.memberEmail(request.getEmail())
+							.contentType("M")	//콘텐츠 추가 전이므로 임시로 M
+							.build());
+			} else {
+				assert mailServiceUser != null;
+				mailUserRepository.delete(mailServiceUser);
+			}
+
+		} catch (BaseException e){
+			log.error(e.getMessage());
+			throw new BaseException(ErrorCode.COMMON_SYSTEM_ERROR);
+		}
+
+		return CommonResponse.success(null, "메일 구독 서비스 상태 변경 완료");
+	}
+
+	@Override
+	public CommonResponse changePassword(MyPage.Request request, String password) throws JsonProcessingException {
+		Map<String, String> bodyMap = om.readValue(password, Map.class);
+		String extractPassword = bodyMap.get("password");
+
+		if(StringUtils.isEmpty(extractPassword)){
+			return CommonResponse.fail(ErrorCode.COMMON_INVALID_PARAMETER);
+		}
+
+		Member member = memberRepository.findByMemberId(request.getId()).orElse(null);
+		if(member == null){
+			throw new BaseException(ErrorCode.USER_NOT_FOUND);
+		}
+
+		if(commonEncoder.matches(extractPassword, member.getMemberPassword())){
+			return CommonResponse.fail(ErrorCode.PASSWORD_IS_EQUASL);
+		}
+		try{
+			member.setMemberPassword(commonEncoder.encode(extractPassword));
+			memberRepository.save(member);
+		} catch (Exception e){
+			log.error(e.getMessage());
+			throw new BaseException(ErrorCode.COMMON_SYSTEM_ERROR);
+		}
+		return CommonResponse.success(null, "비밀번호 변경 성공");
 	}
 }

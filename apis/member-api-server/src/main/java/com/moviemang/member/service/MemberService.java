@@ -21,4 +21,7 @@ public interface MemberService {
     CommonResponse sendCertificationMail(String email) throws JsonProcessingException;
     List<MemberInfo> selectAllMembers();
     CommonResponse myInfo(MyPage.Request request);
+    CommonResponse changeName(MyPage.Request request, String nickname) throws JsonProcessingException;
+    CommonResponse changeMailService(MyPage.Request request, String mailServiceUseYn) throws JsonProcessingException;
+    CommonResponse changePassword(MyPage.Request request, String password) throws JsonProcessingException;
 }
