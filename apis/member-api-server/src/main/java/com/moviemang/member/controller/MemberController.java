@@ -72,4 +72,22 @@ public class MemberController {
         authenticationUtil.checkAuthenticationInfo(httpServletRequest, request);
         return memberService.myInfo(request);
     }
+
+    @PatchMapping(path = "/nickname")
+    public CommonResponse changeName(HttpServletRequest httpServletRequest, MyPage.Request request, @RequestBody String nickname) throws JsonProcessingException {
+        authenticationUtil.checkAuthenticationInfo(httpServletRequest, request);
+        return memberService.changeName(request, nickname);
+    }
+
+    @PatchMapping(path = "/mailService")
+    public CommonResponse changeMailService(HttpServletRequest httpServletRequest, MyPage.Request request, @RequestBody String mailServiceUseYn) throws JsonProcessingException {
+        authenticationUtil.checkAuthenticationInfo(httpServletRequest, request);
+        return memberService.changeMailService(request, mailServiceUseYn);
+    }
+
+    @PatchMapping(path = "/password")
+    public CommonResponse changePassword(HttpServletRequest httpServletRequest, MyPage.Request request, @RequestBody String password) throws JsonProcessingException {
+        authenticationUtil.checkAuthenticationInfo(httpServletRequest, request);
+        return memberService.changePassword(request, password);
+    }
 }
