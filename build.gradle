@@ -30,6 +30,9 @@ allprojects {
     dependencies {
         /* JPA */
         implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+        /* Spring Data MongoDB*/
+        implementation 'org.springframework.boot:spring-boot-starter-data-mongodb'
+
     	/* starter */
     	implementation 'org.springframework.boot:spring-boot-starter'
     	testImplementation 'org.springframework.boot:spring-boot-starter-test'

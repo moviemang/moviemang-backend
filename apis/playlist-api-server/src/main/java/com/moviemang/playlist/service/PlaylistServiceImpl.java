@@ -56,6 +56,7 @@ public class PlaylistServiceImpl implements PlaylistService{
             if (CollectionUtils.isEmpty(playlist)) {
                 return CommonResponse.success(ErrorCode.COMMON_EMPTY_DATA);
             }
+
             List<PlaylistInfo> playlistInfo = playlistMapper.of(playlist);
             myPlaylist.playlist(playlistInfo);
             myPlaylist.page(PageInfo.builder()
@@ -101,12 +102,23 @@ public class PlaylistServiceImpl implements PlaylistService{
                 Aggregation.sort(Sort.Direction.DESC, "likeCount").and(Sort.Direction.DESC, "curRegDate")
         );
 
-        return CommonResponse.success(playlistRepository.playlistOrderByLikeCount(filterByRegDateAndSorting, "playlistWithPrevLikeCount")
-                .getMappedResults()
-                .stream()
-                .map(data -> imgRequestUtil.requestImgPathForBatch(request, param, data))
-                .limit(4)
-                .collect(Collectors.toList()));
+        try{
+            List<PlaylistInfo> playlists = playlistRepository.playlistOrderByLikeCount(filterByRegDateAndSorting, "playlistWithPrevLikeCount")
+                    .getMappedResults()
+                    .stream()
+                    .map(data -> imgRequestUtil.requestImgPathForBatch(request, param, data))
+                    .limit(4)
+                    .collect(Collectors.toList());
+
+            if(CollectionUtils.isEmpty(playlists)){
+                return CommonResponse.success(ErrorCode.COMMON_EMPTY_DATA);
+            }
+            return CommonResponse.success(playlists);
+        }
+        catch (Exception e){
+            log.error(e.getMessage());
+            throw new BaseException(ErrorCode.COMMON_SYSTEM_ERROR);
+        }
     }
 
 }

@@ -13,9 +13,12 @@ import com.moviemang.datastore.entity.maria.MailServiceUser;
 import com.moviemang.datastore.entity.maria.Member;
 import com.moviemang.datastore.repository.maria.DeletedMemberRepository;
 import com.moviemang.datastore.repository.maria.MailCertificationRepository;
+import com.moviemang.datastore.repository.maria.MailUserRepository;
 import com.moviemang.datastore.repository.maria.MemberRepository;
 import com.moviemang.member.dto.DeletedMember;
 import com.moviemang.member.dto.MemberInfo;
+import com.moviemang.member.dto.MyPage;
+import com.moviemang.member.dto.MyPageInfo;
 import com.moviemang.member.encrypt.CommonEncoder;
 import com.moviemang.member.mapper.MemberMapper;
 import com.moviemang.member.util.CreateCertificationUtil;
@@ -43,6 +46,7 @@ public class MemberServiceImpl implements MemberService{
 	private MailCertificationRepository mailRepo;
 	private MailUtil mailUtil;
 	private MailUserServiceImpl mailUserServiceImpl;
+	private MailUserRepository mailUserRepository;
 	private ObjectMapper om;
 	private MemberMapper memberMapper;
 
@@ -214,5 +218,32 @@ public class MemberServiceImpl implements MemberService{
 				return CommonResponse.fail(ErrorCode.CERTIFICATION_NOT_EQUAL);
 			}
 		}
+	}
+
+	@Override
+	public CommonResponse myInfo(MyPage.Request request) {
+		MyPageInfo.MyPageInfoBuilder myPageInfo = MyPageInfo.builder();
+
+		try{
+			if(!mailUserRepository.findById(request.getId()).isPresent()){
+				myPageInfo.mailServiceUseYn("N");
+			}
+			else{
+				myPageInfo.mailServiceUseYn("Y");
+			}
+
+			Member member = memberRepository.findByMemberId(request.getId()).orElse(null);
+			if(member == null){
+				throw new BaseException(ErrorCode.USER_NOT_FOUND);
+			}
+			else{
+				myPageInfo.nickname(member.getMemberName());
+			}
+		} catch (Exception e){
+			log.error(e.getMessage());
+			throw new BaseException(ErrorCode.COMMON_SYSTEM_ERROR);
+		}
+
+		return CommonResponse.success(myPageInfo.build());
 	}
 }

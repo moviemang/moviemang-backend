@@ -8,17 +8,15 @@ import com.moviemang.datastore.dto.member.EmailCheckDto;
 import com.moviemang.datastore.dto.member.MemberJoinDto;
 import com.moviemang.datastore.dto.member.NameCheckDto;
 import com.moviemang.member.dto.DeletedMember;
+import com.moviemang.member.dto.MyPage;
 import com.moviemang.member.service.MemberService;
 import com.moviemang.security.uitls.AuthenticationUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Map;
 
 @Slf4j
 @RequestMapping(path = "/member")
@@ -67,5 +65,11 @@ public class MemberController {
     @PostMapping(path = "/email")
     public CommonResponse sendMailCertification(@RequestBody String email) throws JsonProcessingException {
         return memberService.sendCertificationMail(email);
+    }
+
+    @GetMapping(path = "/myInfo")
+    public CommonResponse myInfo(HttpServletRequest httpServletRequest, MyPage.Request request){
+        authenticationUtil.checkAuthenticationInfo(httpServletRequest, request);
+        return memberService.myInfo(request);
     }
 }

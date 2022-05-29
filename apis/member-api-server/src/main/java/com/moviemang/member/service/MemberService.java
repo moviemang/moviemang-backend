@@ -6,6 +6,7 @@ import com.moviemang.datastore.dto.mail.MailCertificationDto;
 import com.moviemang.datastore.dto.member.MemberJoinDto;
 import com.moviemang.member.dto.DeletedMember;
 import com.moviemang.member.dto.MemberInfo;
+import com.moviemang.member.dto.MyPage;
 
 import java.util.List;
 
@@ -19,4 +20,5 @@ public interface MemberService {
     public CommonResponse deleteMember(DeletedMember deletedMember);
     CommonResponse sendCertificationMail(String email) throws JsonProcessingException;
     List<MemberInfo> selectAllMembers();
+    CommonResponse myInfo(MyPage.Request request);
 }

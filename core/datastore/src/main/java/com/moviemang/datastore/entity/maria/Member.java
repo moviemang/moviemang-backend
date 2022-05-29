@@ -6,8 +6,6 @@ import lombok.*;
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity(name = "member")
 @Getter
@@ -17,26 +15,26 @@ import java.util.List;
 public class Member extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @JsonProperty("id")
+    @JsonProperty("member_id")
     @Column(name = "member_id")
     private Long memberId;
 
     @Email(message = "이메일을 올바르게 입력하세요.")
-    @JsonProperty("email")
-    @Column(name = "member_email")
+    @JsonProperty("member_email")
+    @Column(name = "member_email", length = 30, nullable = false)
     private String memberEmail; // 이메일
 
     @NotBlank
-    @JsonProperty("name")
-    @Column(name = "member_name")
+    @JsonProperty("member_name")
+    @Column(name = "member_name", length = 10, nullable = false)
     private String memberName; // 닉네임
 
     @NotBlank
-    @JsonProperty("password")
-    @Column(name = "member_password")
+    @JsonProperty("member_password")
+    @Column(name = "member_password", length = 100, nullable = false)
     private String memberPassword; // 비밀번호
 
-    @Column(name = "member_type")
+    @Column(name = "member_type", length = 1, nullable = false)
     private String memberType;
 
     @Builder
