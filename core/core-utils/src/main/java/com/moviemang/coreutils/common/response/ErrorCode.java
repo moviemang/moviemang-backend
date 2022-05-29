@@ -14,8 +14,9 @@ public enum ErrorCode {
 
     // Join CHECK Exception
     NICK_DUPLICATED("이미 사용중인 닉네임입니다."),
+    NICK_INVALID("사용할 수 없는 닉네임입니다."),
     EMAIL_DUPLICATED("이미 사용중인 이메일입니다."),
-
+    EMAIL_INVALID("사용할 수 없는 이메일입니다."),
 
     // Auth Exception
     USER_NOT_FOUND("회원을 찾을수 없습니다."),
