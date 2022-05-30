@@ -2,7 +2,6 @@ package com.moviemang.datastore.dto.member;
 
 import lombok.*;
 
-import javax.validation.constraints.Email;
 import javax.validation.constraints.Pattern;
 
 @Getter

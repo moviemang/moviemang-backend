@@ -17,6 +17,7 @@ public enum ErrorCode {
     NICK_INVALID("사용할 수 없는 닉네임입니다."),
     EMAIL_DUPLICATED("이미 사용중인 이메일입니다."),
     EMAIL_INVALID("사용할 수 없는 이메일입니다."),
+    PASSWORD_IS_EQUASL("동일한 비밀번호입니다."),
 
     // Auth Exception
     USER_NOT_FOUND("회원을 찾을수 없습니다."),
@@ -37,6 +38,7 @@ public enum ErrorCode {
     CERTIFICATION_NOT_EQUAL("인증 번호가 일치하지 않습니다."),
 
     /* 영화 API 관련 Exception */
+    MOVIE_API_REQUEST_ERROR("영화 API 요청 중 오류가 발생하였습니다."),
     INVALID_API_KEY("API키가 유효하지 않습니다."),
     NOT_FOUND_MOVIE("해당 영화의 데이터가 존재하지 않습니다."),
 

@@ -16,12 +16,12 @@ public abstract class BaseTimeEntity {
 
     @CreatedDate
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @Column(name = "reg_date")
+    @Column(name = "reg_date", nullable = false)
     private LocalDateTime regDate; // 회원 등록일
 
     @LastModifiedDate
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @Column(name = "mod_date")
+    @Column(name = "mod_date", nullable = false)
     private LocalDateTime modDate; // 회원 수정일
 
     public LocalDateTime getRegDate() {

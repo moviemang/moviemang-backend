@@ -14,11 +14,11 @@ public class MailServiceUser extends BaseTimeEntity{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "mail_service_id")
     private Long mailServiceId;
-    @Column(name = "member_id")
+    @Column(name = "member_id", nullable = false)
     private Long memberId;
-    @Column(name = "member_email")
+    @Column(name = "member_email", length = 30, nullable = false)
     private String memberEmail;
-    @Column(name = "content_type")
+    @Column(name = "content_type", length = 1, nullable = false)
     private String contentType;
 
     @Builder

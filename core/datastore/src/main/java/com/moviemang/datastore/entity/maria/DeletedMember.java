@@ -19,10 +19,11 @@ public class DeletedMember {
     private Long deletedMemberId;
 
     @Email(message = "이메일을 올바르게 입력하세요.")
-    @Column(name = "member_email")
+    @Column(name = "member_email", length = 30, nullable = false)
     private String memberEmail; // 이메일
 
     @CreatedDate
+    @Column(name = "reg_date", nullable = false)
     private LocalDateTime regDate;
 
     @Builder

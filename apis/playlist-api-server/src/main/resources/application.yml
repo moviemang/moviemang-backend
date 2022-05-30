@@ -1,14 +1,26 @@
+server:
+  port: 8081
+
+---
 
 spring:
-  profiles:
-    active: local
+  config:
+    activate:
+      on-profile: local
   jpa:
     hibernate:
       ddl-auto: update
     show-sql: true
-server:
-  port: 8081
-movie:
-  api-key: cbfa45007409cc068286bfeafd12a530
-  base-url : https://api.themoviedb.org/3/
-  img-url: https://image.tmdb.org/t/p/w500
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: prod
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+
+
