@@ -45,7 +45,7 @@ public class MemberController {
         return memberService.checkEmail(emailCheckDto.getEmail());
     }
     @PostMapping(path = "/nickcheck")
-    public CommonResponse getNickCheck(@RequestBody NameCheckDto nameCheckDto){
+    public CommonResponse getNickCheck(@RequestBody @Validated NameCheckDto nameCheckDto){
         if(nameCheckDto.getNickname() == null) {
             return CommonResponse.fail(ErrorCode.COMMON_EMPTY_DATA);
         }
