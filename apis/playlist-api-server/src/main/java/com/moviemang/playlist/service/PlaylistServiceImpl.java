@@ -18,8 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.mongodb.core.aggregation.Aggregation;
-import org.springframework.data.mongodb.core.aggregation.SortOperation;
+import org.springframework.data.mongodb.core.aggregation.*;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -91,27 +90,38 @@ public class PlaylistServiceImpl implements PlaylistService{
     }
 
     @Override
-    public CommonResponse lastestPlaylist(Pageable pageRequest) {
+    public CommonResponse lastestPlaylist() {
         HttpClientRequest request = new HttpClientRequest();
         Map<String, Object> param = Maps.newHashMap();
         param.put("api_key", movieApiConfig.getMovieApiProperties().getApiKey());
         request.setData(param);
 
         Aggregation lastestAggregation = Aggregation.newAggregation(
+                Aggregation.project("_id","playlistTitle","movieIds","likes","memberId","modDate"
+                        ,"playlistDescription","tags","display","regDate","movieIdsLength").and("movieIds").size().as("movieIdsLength"),
+                Aggregation.match(Criteria.where("display").is(true).and("movieIdsLength").gte(5)),
                 Aggregation.sort(Sort.Direction.DESC,"regDate"),
-                Aggregation.match(Criteria.where("movieIds").gte(5)),
-                Aggregation.match(Criteria.where("display").is(true).and("movieIds").not().size(0)),
                 Aggregation.limit(4)
         );
 
-        List<PlaylistInfo> lastestPlaylist = playlistRepository.lastestPlaylist(lastestAggregation, "playlist")
-                .getMappedResults()
-                .stream()
-                .map( playlist -> imgRequestUtil.requestImgPath(movieApiConfig, request, playlist))
-                .sorted((p1, p2) -> Long.compare(p2.getLikeCount(), p1.getLikeCount()))
-                .collect(Collectors.toList());
+        try{
+            List<PlaylistInfo> playlists = playlistRepository.lastestPlaylist(lastestAggregation, "playlist")
+                    .getMappedResults()
+                    .stream()
+                    .map( playlist -> imgRequestUtil.requestImgPath(movieApiConfig, request, playlist))
+                    .sorted((p1, p2) -> Long.compare(p2.getLikeCount(), p1.getLikeCount()))
+                    .collect(Collectors.toList());
 
-        return CommonResponse.success(lastestPlaylist);
+            if(CollectionUtils.isEmpty(playlists)){
+                return CommonResponse.success(ErrorCode.COMMON_EMPTY_DATA);
+            }
+            return CommonResponse.success(playlists);
+        }
+        catch (Exception e){
+            e.printStackTrace();
+            log.error(e.getMessage());
+            throw new BaseException(ErrorCode.COMMON_SYSTEM_ERROR);
+        }
     }
 
     @Override

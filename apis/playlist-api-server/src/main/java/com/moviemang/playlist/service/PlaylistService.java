@@ -15,7 +15,7 @@ public interface PlaylistService {
     CommonResponse<MyPlaylist> myPlaylist(CommonParam commonParam, Pageable pageable);
     CommonResponse save(Playlist.Request playlist);
 
-    CommonResponse lastestPlaylist(Pageable pageRequest);
+    CommonResponse lastestPlaylist();
 
     CommonResponse<List<PlaylistInfo>> playlistOrderByLikeCount();
 }

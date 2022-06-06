@@ -37,9 +37,9 @@ public class PlaylistController {
 //        System.out.println(request.getEmail());
 //        System.out.println(request.getId());
 //    }
-    @GetMapping("/")
-    public CommonResponse mainPlaylist(@PageableDefault(page = 1, size = 4) Pageable pageRequest) {
-        return playlistService.lastestPlaylist(pageRequest);
+    @GetMapping("/lastest")
+    public CommonResponse mainPlaylist() {
+        return playlistService.lastestPlaylist();
     }
     @GetMapping("/me")
     public CommonResponse myPlaylist(HttpServletRequest httpServletRequest,

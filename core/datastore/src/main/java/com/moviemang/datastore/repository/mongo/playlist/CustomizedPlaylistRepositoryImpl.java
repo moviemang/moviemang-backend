@@ -1,5 +1,6 @@
 package com.moviemang.datastore.repository.mongo.playlist;
 
+import com.moviemang.datastore.dto.playlist.PlaylistAggregationResult;
 import com.moviemang.datastore.dto.playlist.PlaylistWithPrevLikeCount;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
