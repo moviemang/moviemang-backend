@@ -1,5 +1,6 @@
 package com.moviemang.datastore.repository.mongo.playlist;
 
+import com.moviemang.datastore.dto.playlist.PlaylistAggregationResult;
 import com.moviemang.datastore.dto.playlist.PlaylistWithPrevLikeCount;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
@@ -16,5 +17,10 @@ public class CustomizedPlaylistRepositoryImpl implements CustomizedPlaylistRepos
     @Override
     public AggregationResults<PlaylistWithPrevLikeCount> playlistOrderByLikeCount(Aggregation aggregation, String collection) {
         return mongoTemplate.aggregate(aggregation, collection, PlaylistWithPrevLikeCount.class);
+    }
+
+    @Override
+    public AggregationResults<PlaylistAggregationResult> lastestPlaylist(Aggregation aggregation, String collection) {
+        return mongoTemplate.aggregate(aggregation, collection, PlaylistAggregationResult.class);
     }
 }
