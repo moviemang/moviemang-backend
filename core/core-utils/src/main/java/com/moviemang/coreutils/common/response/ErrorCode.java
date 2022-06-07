@@ -21,7 +21,6 @@ public enum ErrorCode {
 
     // Auth Exception
     USER_NOT_FOUND("회원을 찾을수 없습니다."),
-
     AUTH_INVALID_SIGNATURE_JWT("토큰이 유효하지 않습니다."),
     AUTH_MALFORMED_JWT("토큰이 유효하지 않습니다."),
     AUTH_ILLEGAL_ARGUMENT_JWT("토큰이 유효하지 않습니다."),
@@ -42,8 +41,9 @@ public enum ErrorCode {
     INVALID_API_KEY("API키가 유효하지 않습니다."),
     NOT_FOUND_MOVIE("해당 영화의 데이터가 존재하지 않습니다."),
 
-    /* */
-    PLAYLIST_SAVE_FAIL("플레이리스트 생성 실패했습니다.")
+    /* playlist */
+    PLAYLIST_SAVE_FAIL("플레이리스트 생성 실패했습니다."),
+    PLAYLIST_NOT_FOUND("존재하지 않는 플레이리스트입니다.")
     ;
 
     private final String errorMsg;

@@ -2,6 +2,7 @@ package com.moviemang.playlist.service;
 
 import com.moviemang.coreutils.common.response.CommonResponse;
 import com.moviemang.coreutils.model.vo.CommonParam;
+import com.moviemang.playlist.dto.DeleteMovie;
 import com.moviemang.playlist.dto.MyPlaylist;
 import com.moviemang.playlist.dto.Playlist;
 import com.moviemang.playlist.dto.PlaylistInfo;
@@ -18,4 +19,5 @@ public interface PlaylistService {
     CommonResponse lastestPlaylist();
 
     CommonResponse<List<PlaylistInfo>> playlistOrderByLikeCount();
+    CommonResponse deleteMovie(DeleteMovie.Request request);
 }
