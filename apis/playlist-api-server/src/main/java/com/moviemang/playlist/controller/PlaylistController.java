@@ -1,6 +1,7 @@
 package com.moviemang.playlist.controller;
 
 import com.moviemang.coreutils.common.response.CommonResponse;
+import com.moviemang.playlist.dto.DeleteMovie;
 import com.moviemang.playlist.dto.MyPlaylist;
 import com.moviemang.playlist.dto.Playlist;
 import com.moviemang.playlist.dto.PlaylistInfo;
@@ -47,6 +48,12 @@ public class PlaylistController {
     @GetMapping("/playlistOrderByLikeCount")
     public CommonResponse<List<PlaylistInfo>> playlistOrderByLikeCount(){
         return playlistService.playlistOrderByLikeCount();
+    }
+
+    @DeleteMapping("/movie")
+    public CommonResponse playlistMovieDelete(HttpServletRequest httpServletRequest, @RequestBody DeleteMovie.Request request){
+        authenticationUtil.checkAuthenticationInfo(httpServletRequest, request);
+        return playlistService.deleteMovie(request);
     }
 
 

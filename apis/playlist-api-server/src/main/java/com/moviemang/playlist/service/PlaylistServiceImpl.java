@@ -10,11 +10,13 @@ import com.moviemang.coreutils.model.vo.PageInfo;
 import com.moviemang.datastore.config.MovieApiConfig;
 import com.moviemang.datastore.entity.mongo.Playlist;
 import com.moviemang.datastore.repository.mongo.playlist.PlaylistRepository;
+import com.moviemang.playlist.dto.DeleteMovie;
 import com.moviemang.playlist.dto.MyPlaylist;
 import com.moviemang.playlist.dto.PlaylistInfo;
 import com.moviemang.playlist.mapper.PlaylistMapper;
 import com.moviemang.playlist.util.ImgRequestUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -121,4 +123,24 @@ public class PlaylistServiceImpl implements PlaylistService{
         }
     }
 
+    @Override
+    public CommonResponse deleteMovie(DeleteMovie.Request request) {
+        try{
+            Playlist playlist = playlistRepository.findById(new ObjectId(request.getPlaylistId())).orElse(null);
+            if(playlist == null){
+                return CommonResponse.fail(ErrorCode.PLAYLIST_NOT_FOUND);
+            }
+            playlist.setMovieIds(playlist.getMovieIds()
+                    .stream()
+                    .filter( id -> request.getMovieId() != id)
+                    .collect(Collectors.toList()));
+
+            playlistRepository.save(playlist);
+        } catch (Exception e){
+            log.error(e.getMessage());
+            throw new BaseException(ErrorCode.COMMON_SYSTEM_ERROR);
+        }
+
+        return CommonResponse.success(null, "영화 삭제에 성공하였습니다.");
+    }
 }
