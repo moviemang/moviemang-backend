@@ -23,4 +23,9 @@ public class CustomizedPlaylistRepositoryImpl implements CustomizedPlaylistRepos
     public AggregationResults<PlaylistAggregationResult> lastestPlaylist(Aggregation aggregation, String collection) {
         return mongoTemplate.aggregate(aggregation, collection, PlaylistAggregationResult.class);
     }
+
+    @Override
+    public PlaylistAggregationResult playlistDetail(Aggregation likeAggregation, String collection) {
+        return mongoTemplate.aggregate(likeAggregation, collection, PlaylistAggregationResult.class).getUniqueMappedResult();
+    }
 }
