@@ -19,6 +19,8 @@ import org.springframework.stereotype.Component;
 
 import java.util.*;
 
+import static javafx.scene.CacheHint.DEFAULT;
+
 @Slf4j
 @Component
 public class ImgRequestUtil {
@@ -26,6 +28,10 @@ public class ImgRequestUtil {
     private ObjectMapper objectMapper;
     private PlaylistMapperImpl playlistMapperImpl;
     private MovieApiConfig movieApiConfig;
+
+    public enum REQUEST_CODE{
+        DEFAULT, DETAIL
+    }
 
     @Autowired
     public ImgRequestUtil(MemberRepository memberRepository, ObjectMapper objectMapper,
@@ -36,10 +42,16 @@ public class ImgRequestUtil {
         this.movieApiConfig = movieApiConfig;
     }
 
-    public PlaylistInfo requestImgPath(MovieApiConfig movieApiConfig, HttpClientRequest request, PlaylistAggregationResult aggregationResult){
+
+
+    public PlaylistInfo requestImgPath(REQUEST_CODE code, HttpClientRequest request, PlaylistAggregationResult aggregationResult){
         List<String> imgPathList = new ArrayList<String>();
         List<Integer> movieIds = aggregationResult.getMovieIds();
-        Collections.shuffle(movieIds);
+
+        if(code.equals(REQUEST_CODE.DEFAULT)){
+            Collections.shuffle(movieIds);
+        }
+
         int idx = 0;
         for(int movieId : movieIds){
             if(idx == 6){
@@ -81,11 +93,7 @@ public class ImgRequestUtil {
 
     }
 
-    public PlaylistInfo requestImgPathForBatch(HttpClientRequest request, Map<String, Object> param, PlaylistWithPrevLikeCount item) {
-
-        param.put("api_key", movieApiConfig.getMovieApiProperties().getApiKey());
-        request.setData(param);
-
+    public PlaylistInfo requestImgPathForBatch(HttpClientRequest request, PlaylistWithPrevLikeCount item) {
         List<String> imgPathList = new ArrayList<String>();
         List<Integer> movieIds = item.getPlaylist().getMovieIds();
         Collections.shuffle(movieIds);
@@ -130,3 +138,4 @@ public class ImgRequestUtil {
     }
 
 }
+

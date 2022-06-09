@@ -2,13 +2,8 @@ package com.moviemang.playlist.service;
 
 import com.moviemang.coreutils.common.response.CommonResponse;
 import com.moviemang.coreutils.model.vo.CommonParam;
-import com.moviemang.playlist.dto.DeleteMovie;
-import com.moviemang.playlist.dto.MyPlaylist;
-import com.moviemang.playlist.dto.Playlist;
-import com.moviemang.playlist.dto.PlaylistInfo;
+import com.moviemang.playlist.dto.*;
 import org.springframework.data.domain.Pageable;
-
-import com.moviemang.coreutils.common.response.CommonResponse;
 
 import java.util.List;
 
@@ -20,4 +15,8 @@ public interface PlaylistService {
 
     CommonResponse<List<PlaylistInfo>> playlistOrderByLikeCount();
     CommonResponse deleteMovie(DeleteMovie.Request request);
+
+    CommonResponse likeAdd(PlaylistLikeAdd.Request request);
+
+    CommonResponse detail(PlaylistDetail.Request request);
 }

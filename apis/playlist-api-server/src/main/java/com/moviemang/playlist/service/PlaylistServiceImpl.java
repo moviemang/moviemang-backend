@@ -1,18 +1,17 @@
 package com.moviemang.playlist.service;
 
-import com.google.common.collect.Maps;
 import com.moviemang.coreutils.common.exception.BaseException;
 import com.moviemang.coreutils.common.response.CommonResponse;
 import com.moviemang.coreutils.common.response.ErrorCode;
 import com.moviemang.coreutils.model.vo.CommonParam;
 import com.moviemang.coreutils.model.vo.HttpClientRequest;
 import com.moviemang.coreutils.model.vo.PageInfo;
-import com.moviemang.datastore.config.MovieApiConfig;
+import com.moviemang.datastore.dto.playlist.PlaylistAggregationResult;
+import com.moviemang.datastore.entity.mongo.Like;
 import com.moviemang.datastore.entity.mongo.Playlist;
+import com.moviemang.datastore.repository.mongo.like.LikeRepository;
 import com.moviemang.datastore.repository.mongo.playlist.PlaylistRepository;
-import com.moviemang.playlist.dto.DeleteMovie;
-import com.moviemang.playlist.dto.MyPlaylist;
-import com.moviemang.playlist.dto.PlaylistInfo;
+import com.moviemang.playlist.dto.*;
 import com.moviemang.playlist.mapper.PlaylistMapper;
 import com.moviemang.playlist.util.ImgRequestUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -29,7 +28,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -37,17 +35,45 @@ import java.util.stream.Collectors;
 public class PlaylistServiceImpl implements PlaylistService{
 
     private PlaylistRepository playlistRepository;
+    private LikeRepository likeRepository;
     private PlaylistMapper playlistMapper;
-    private MovieApiConfig movieApiConfig;
     private ImgRequestUtil imgRequestUtil;
+    private HttpClientRequest httpClientRequest;
 
     @Autowired
-    public PlaylistServiceImpl(PlaylistRepository playlistRepository, PlaylistMapper playlistMapper, ImgRequestUtil imgRequestUtil,
-                               MovieApiConfig movieApiConfig) {
+    public PlaylistServiceImpl(PlaylistRepository playlistRepository, LikeRepository likeRepository,
+                               PlaylistMapper playlistMapper, ImgRequestUtil imgRequestUtil,
+                               HttpClientRequest httpClientRequest) {
         this.playlistRepository = playlistRepository;
+        this.likeRepository = likeRepository;
         this.playlistMapper = playlistMapper;
         this.imgRequestUtil = imgRequestUtil;
-        this.movieApiConfig = movieApiConfig;
+        this.httpClientRequest = httpClientRequest;
+    }
+
+    @Override
+    public CommonResponse detail(PlaylistDetail.Request request) {
+        PlaylistDetail.Response.ResponseBuilder playlistDetail = PlaylistDetail.Response.builder();
+
+        try{
+            ObjectId id = new ObjectId(request.getPlaylistId());
+            Aggregation likeAggregation = Aggregation.newAggregation(
+                    Aggregation.match(Criteria.where("_id").is(id)),
+                    Aggregation.lookup("like", "_id", "targetId", "likes")
+            );
+
+            PlaylistAggregationResult aggregationResult =  playlistRepository.playlistDetail(likeAggregation, "playlist");
+            if(aggregationResult == null){
+                throw new BaseException(ErrorCode.COMMON_ENTITY_NOT_FOUND);
+            } else {
+                PlaylistInfo playlistInfo = imgRequestUtil.requestImgPath(ImgRequestUtil.REQUEST_CODE.DETAIL, httpClientRequest, aggregationResult);
+                return CommonResponse.success(playlistDetail.playlistInfo(playlistInfo).build());
+            }
+
+        } catch (Exception e){
+            log.error(e.getMessage());
+            throw new BaseException(ErrorCode.COMMON_SYSTEM_ERROR);
+        }
     }
 
     @Override
@@ -93,11 +119,6 @@ public class PlaylistServiceImpl implements PlaylistService{
 
     @Override
     public CommonResponse lastestPlaylist() {
-        HttpClientRequest request = new HttpClientRequest();
-        Map<String, Object> param = Maps.newHashMap();
-        param.put("api_key", movieApiConfig.getMovieApiProperties().getApiKey());
-        request.setData(param);
-
         Aggregation lastestAggregation = Aggregation.newAggregation(
                 Aggregation.project("_id","playlistTitle","movieIds","likes","memberId","modDate"
                         ,"playlistDescription","tags","display","regDate","movieIdsLength").and("movieIds").size().as("movieIdsLength"),
@@ -110,7 +131,7 @@ public class PlaylistServiceImpl implements PlaylistService{
             List<PlaylistInfo> playlists = playlistRepository.lastestPlaylist(lastestAggregation, "playlist")
                     .getMappedResults()
                     .stream()
-                    .map( playlist -> imgRequestUtil.requestImgPath(movieApiConfig, request, playlist))
+                    .map( playlist -> imgRequestUtil.requestImgPath(ImgRequestUtil.REQUEST_CODE.DEFAULT, httpClientRequest, playlist))
                     .sorted((p1, p2) -> Long.compare(p2.getLikeCount(), p1.getLikeCount()))
                     .collect(Collectors.toList());
 
@@ -128,8 +149,6 @@ public class PlaylistServiceImpl implements PlaylistService{
 
     @Override
     public CommonResponse<List<PlaylistInfo>> playlistOrderByLikeCount() {
-        HttpClientRequest request = new HttpClientRequest();
-        Map<String, Object> param = Maps.newHashMap();
 
         Aggregation filterByRegDateAndSorting = Aggregation.newAggregation(
                 Aggregation.match(Criteria.where("curRegDate")
@@ -143,7 +162,7 @@ public class PlaylistServiceImpl implements PlaylistService{
             List<PlaylistInfo> playlists = playlistRepository.playlistOrderByLikeCount(filterByRegDateAndSorting, "playlistWithPrevLikeCount")
                     .getMappedResults()
                     .stream()
-                    .map(data -> imgRequestUtil.requestImgPathForBatch(request, param, data))
+                    .map(data -> imgRequestUtil.requestImgPathForBatch(httpClientRequest, data))
                     .limit(4)
                     .collect(Collectors.toList());
 
@@ -163,7 +182,7 @@ public class PlaylistServiceImpl implements PlaylistService{
         try{
             Playlist playlist = playlistRepository.findById(new ObjectId(request.getPlaylistId())).orElse(null);
             if(playlist == null){
-                return CommonResponse.fail(ErrorCode.PLAYLIST_NOT_FOUND);
+                return CommonResponse.fail(ErrorCode.COMMON_ENTITY_NOT_FOUND);
             }
             playlist.setMovieIds(playlist.getMovieIds()
                     .stream()
@@ -177,5 +196,39 @@ public class PlaylistServiceImpl implements PlaylistService{
         }
 
         return CommonResponse.success(null, "영화 삭제에 성공하였습니다.");
+    }
+
+    @Override
+    public CommonResponse likeAdd(PlaylistLikeAdd.Request request) {
+        PlaylistLikeAdd.Response.ResponseBuilder playlist = PlaylistLikeAdd.Response.builder();
+        try{
+            ObjectId id = new ObjectId(request.getPlaylistId());
+            Like like = likeRepository.findLikeByTargetIdAndMemberId(id, request.getId());
+            if(like != null){
+                likeRepository.deleteById(like.get_id());
+                playlist.resultType("DELETE");
+            } else{
+                likeRepository.save(Like.builder()
+                        .memberId(Math.toIntExact(request.getId()))
+                        .targetId(id)
+                        .likeType(request.getLikeType())
+                        .build());
+
+                playlist.resultType("INSERT");
+            }
+
+            Aggregation likeAggregation = Aggregation.newAggregation(
+                    Aggregation.match(Criteria.where("_id").is(id)),
+                    Aggregation.lookup("like", "_id", "targetId", "likes")
+            );
+
+            PlaylistAggregationResult aggregationResult =  playlistRepository.playlistDetail(likeAggregation, "playlist");
+            playlist.likeCount(aggregationResult.getLikes().size());
+        } catch (Exception e){
+            log.error(e.getMessage());
+            throw new BaseException(ErrorCode.COMMON_SYSTEM_ERROR);
+        }
+        return CommonResponse.success(playlist.build());
+
     }
 }

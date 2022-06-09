@@ -33,7 +33,7 @@ public class PlaylistMapperImpl implements PlaylistMapper {
                 .title(playlist.getPlaylistTitle())
                 .tags(tagInfos(playlist.getTags()))
                 .regDate(playlist.getRegDate())
-                .regDate(playlist.getModDate())
+                .modDate(playlist.getModDate())
                 .nickname(memberRepository.findByMemberId(playlist.getMemberId()).get().getMemberName())
                 .movieCount(CollectionUtils.isEmpty(playlist.getMovieIds())?0:playlist.getMovieIds().size())
                 .build();
