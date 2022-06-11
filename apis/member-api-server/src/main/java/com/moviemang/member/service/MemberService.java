@@ -1,27 +1,27 @@
 package com.moviemang.member.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.moviemang.coreutils.common.response.CommonResponse;
 import com.moviemang.datastore.dto.mail.MailCertificationDto;
 import com.moviemang.datastore.dto.member.MemberJoinDto;
 import com.moviemang.member.dto.DeletedMember;
 import com.moviemang.member.dto.MemberInfo;
 import com.moviemang.member.dto.MyPage;
+import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
 
 @SuppressWarnings("rawtypes")
 public interface MemberService {
-	CommonResponse checkMailCertification(MailCertificationDto certificationDto);
-    public CommonResponse regist(MemberJoinDto member);
-    public CommonResponse checkEmail(String email);
-    public CommonResponse checkNick(String nick);
-    public CommonResponse deleteMember(DeletedMember deletedMember);
-    CommonResponse sendCertificationMail(String email) throws JsonProcessingException;
+	ResponseEntity checkMailCertification(MailCertificationDto certificationDto);
+    ResponseEntity regist(MemberJoinDto member);
+    ResponseEntity checkEmail(String email);
+    ResponseEntity checkNick(String nick);
+    ResponseEntity deleteMember(DeletedMember deletedMember);
+    ResponseEntity sendCertificationMail(String email) throws JsonProcessingException;
     List<MemberInfo> selectAllMembers();
-    CommonResponse myInfo(MyPage.Request request);
-    CommonResponse changeName(MyPage.Request request, String nickname) throws JsonProcessingException;
-    CommonResponse changeMailService(MyPage.Request request, String mailServiceUseYn) throws JsonProcessingException;
-    CommonResponse changePassword(MyPage.Request request, String password) throws JsonProcessingException;
+    ResponseEntity myInfo(MyPage.Request request);
+    ResponseEntity changeName(MyPage.Request request, String nickname) throws JsonProcessingException;
+    ResponseEntity changeMailService(MyPage.Request request, String mailServiceUseYn) throws JsonProcessingException;
+    ResponseEntity changePassword(MyPage.Request request, String password) throws JsonProcessingException;
 }

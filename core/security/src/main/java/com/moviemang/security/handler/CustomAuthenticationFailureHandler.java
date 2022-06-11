@@ -6,6 +6,7 @@ import com.moviemang.coreutils.common.response.ErrorCode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.stereotype.Component;
@@ -27,12 +28,7 @@ public class CustomAuthenticationFailureHandler implements AccessDeniedHandler {
 
         try (OutputStream os = response.getOutputStream()){
 
-            CommonResponse commonResponse = CommonResponse.fail(ErrorCode.AUTH_INVALID_JWT,HttpStatus.UNAUTHORIZED);
-
-//            ObjectMapper objectMapper = new ObjectMapper();
-//            objectMapper.writeValue(os, commonResponse);
-//            os.flush();
-            new ObjectMapper().writeValue(response.getOutputStream(), commonResponse);
+            new ObjectMapper().writeValue(response.getOutputStream(), ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(CommonResponse.fail(ErrorCode.AUTH_INVALID_JWT)));
         }
     }
 }

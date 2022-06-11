@@ -13,6 +13,8 @@ import com.moviemang.member.service.MemberService;
 import com.moviemang.security.uitls.AuthenticationUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,60 +35,60 @@ public class MemberController {
     }
 
     @PostMapping(path = "/join")
-    public CommonResponse postRegist(@RequestBody @Validated MemberJoinDto memberJoinDto){
+    public ResponseEntity postRegist(@RequestBody @Validated MemberJoinDto memberJoinDto){
         return memberService.regist(memberJoinDto);
     }
 
     @PostMapping(path = "/emailcheck")
-    public CommonResponse getEmailCheck(@RequestBody @Validated EmailCheckDto emailCheckDto){
+    public ResponseEntity getEmailCheck(@RequestBody @Validated EmailCheckDto emailCheckDto){
         if(emailCheckDto.getEmail() == null) {
-            return CommonResponse.fail(ErrorCode.COMMON_EMPTY_DATA);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(CommonResponse.fail(ErrorCode.COMMON_EMPTY_DATA));
         }
         return memberService.checkEmail(emailCheckDto.getEmail());
     }
     @PostMapping(path = "/nickcheck")
-    public CommonResponse getNickCheck(@RequestBody @Validated NameCheckDto nameCheckDto){
+    public ResponseEntity getNickCheck(@RequestBody @Validated NameCheckDto nameCheckDto){
         if(nameCheckDto.getNickname() == null) {
-            return CommonResponse.fail(ErrorCode.COMMON_EMPTY_DATA);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(CommonResponse.fail(ErrorCode.COMMON_EMPTY_DATA));
         }
-        return memberService.checkEmail(nameCheckDto.getNickname());
+        return memberService.checkNick(nameCheckDto.getNickname());
     }
 
     @DeleteMapping
-    public CommonResponse deleteMember(HttpServletRequest httpServletRequest, DeletedMember deletedMember) {
+    public ResponseEntity deleteMember(HttpServletRequest httpServletRequest, DeletedMember deletedMember) {
         authenticationUtil.checkAuthenticationInfo(httpServletRequest, deletedMember);
         return memberService.deleteMember(deletedMember);
     }
 	@PostMapping(path = "/email/certification")
-    public CommonResponse checkCertification(@RequestBody MailCertificationDto certificationDto){
+    public ResponseEntity checkCertification(@RequestBody MailCertificationDto certificationDto){
     	return memberService.checkMailCertification(certificationDto);
     }
 
     @PostMapping(path = "/email")
-    public CommonResponse sendMailCertification(@RequestBody String email) throws JsonProcessingException {
+    public ResponseEntity sendMailCertification(@RequestBody String email) throws JsonProcessingException {
         return memberService.sendCertificationMail(email);
     }
 
     @GetMapping(path = "/myInfo")
-    public CommonResponse myInfo(HttpServletRequest httpServletRequest, MyPage.Request request){
+    public ResponseEntity myInfo(HttpServletRequest httpServletRequest, MyPage.Request request){
         authenticationUtil.checkAuthenticationInfo(httpServletRequest, request);
         return memberService.myInfo(request);
     }
 
     @PatchMapping(path = "/nickname")
-    public CommonResponse changeName(HttpServletRequest httpServletRequest, MyPage.Request request, @RequestBody String nickname) throws JsonProcessingException {
+    public ResponseEntity changeName(HttpServletRequest httpServletRequest, MyPage.Request request, @RequestBody String nickname) throws JsonProcessingException {
         authenticationUtil.checkAuthenticationInfo(httpServletRequest, request);
         return memberService.changeName(request, nickname);
     }
 
     @PatchMapping(path = "/mailService")
-    public CommonResponse changeMailService(HttpServletRequest httpServletRequest, MyPage.Request request, @RequestBody String mailServiceUseYn) throws JsonProcessingException {
+    public ResponseEntity changeMailService(HttpServletRequest httpServletRequest, MyPage.Request request, @RequestBody String mailServiceUseYn) throws JsonProcessingException {
         authenticationUtil.checkAuthenticationInfo(httpServletRequest, request);
         return memberService.changeMailService(request, mailServiceUseYn);
     }
 
     @PatchMapping(path = "/password")
-    public CommonResponse changePassword(HttpServletRequest httpServletRequest, MyPage.Request request, @RequestBody String password) throws JsonProcessingException {
+    public ResponseEntity changePassword(HttpServletRequest httpServletRequest, MyPage.Request request, @RequestBody String password) throws JsonProcessingException {
         authenticationUtil.checkAuthenticationInfo(httpServletRequest, request);
         return memberService.changePassword(request, password);
     }
